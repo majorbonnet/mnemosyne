@@ -36,13 +36,15 @@ services:
         # the db connection info is set in a secrets file
         secrets:
             - keycloak_conf
-    #webclient:
-    #    depends_on:
-    #        - auth
-    #    build: ./webclient
-    #    image: mnemosyne_webclient
-    #    ports:
-    #        - '5000:5000'
+    webclient:
+        depends_on:
+            - auth
+        build: ./webclient
+        image: mnemosyne_webclient
+        ports:
+            - '5173:3000'
+        env_file:
+            - ./webclient/.env
 secrets:
     db_password:
         file: ./secrets/db_password.txt
