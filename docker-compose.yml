@@ -1,0 +1,53 @@
+services:
+    db:
+        image: 'postgres:17.4'
+        volumes: 
+            - ./postgresql/data:/var/lib/postgresql/data
+            - ./init-multi-dbs.sh:/docker-entrypoint-initdb.d/init-multi-dbs.sh
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+            POSTGRES_MULTIPLE_DATABASES_FILE: /run/secrets/app_dbs
+        ports:
+            - '5434:5432'
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+            interval: 10s
+            retries: 5
+            start_period: 30s
+            timeout: 10s
+        secrets:
+            - db_password
+            - app_dbs
+    auth:
+        # need to wait for the db to be reachable
+        depends_on:
+            db:
+                condition: service_healthy
+        build: ./auth
+        image: mnemosyne_auth
+        entrypoint:
+            - /opt/keycloak/bin/kc.sh
+            - --config-file=/run/secrets/keycloak_conf
+            - start-dev
+        # only exposing the https page
+        ports:
+            - '8443:8443'
+        # the db connection info is set in a secrets file
+        secrets:
+            - keycloak_conf
+    #webclient:
+    #    depends_on:
+    #        - auth
+    #    build: ./webclient
+    #    image: mnemosyne_webclient
+    #    ports:
+    #        - '5000:5000'
+secrets:
+    db_password:
+        file: ./secrets/db_password.txt
+    app_dbs:
+        file: ./secrets/app_dbs.txt
+    keycloak_conf:
+        file: ./secrets/keycloak.conf
+
