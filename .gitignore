@@ -58,3 +58,6 @@ nunit-*.xml
 
 # Used locally for data mount
 /[Pp]ostgresql/
+
+# Visual Studio settings folder
+.vs/

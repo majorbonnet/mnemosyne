@@ -8,8 +8,8 @@ set -u
 function create_databases() {
     database=$1
     password=$2
-    database_owner="${1}_owner"
-    echo "Creating user '$database_owner' database '$database' password '$password'"
+    database_owner=$1
+
     psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
       CREATE USER $database_owner with encrypted password '$password';
       CREATE DATABASE $database WITH OWNER $database_owner;
@@ -33,7 +33,6 @@ if [ -n "$POSTGRES_MULTIPLE_DATABASES_FILE" ]; then
       pswd=$user
     fi
 
-    echo "user is $user and pass is $pswd"
     create_databases $user $pswd
   done
   echo "Multiple databases created!"
