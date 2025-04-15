@@ -45,6 +45,19 @@ services:
             - '5173:3000'
         env_file:
             - ./webclient/.env
+    #dotnetapi:
+    #    depends_on:
+    #        - auth
+    #    build: ./dotnet-api
+    #    image: mnemosyne_dotnet_api
+    #    ports: 
+    #        - 9442
+    #        - 9443
+    #    env_file:
+    #        ./dotnet-api/.env
+    #    volumes:
+    #        - ~/.aspnet/https:/https:ro
+
 secrets:
     db_password:
         file: ./secrets/db_password.txt

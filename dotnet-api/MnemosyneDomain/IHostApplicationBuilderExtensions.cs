@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MnemosyneDomain.Queries.Journals;
 
 namespace MnemosyneDomain
 {
@@ -19,6 +20,8 @@ namespace MnemosyneDomain
             {
                 opts.UseNpgsql(appBuilder.Configuration.GetConnectionString("DefaultConnection"));
             });
+
+            appBuilder.Services.AddScoped<JournalQueryHandler>();
         }
     }
 }

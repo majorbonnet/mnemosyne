@@ -15,6 +15,10 @@ function create_databases() {
       CREATE DATABASE $database WITH OWNER $database_owner;
       GRANT ALL PRIVILEGES ON DATABASE $database TO $database_owner;
 EOSQL
+
+    psql -d $database -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
+      ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO $database_owner;
+EOSQL
 }
 
 

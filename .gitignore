@@ -61,3 +61,6 @@ nunit-*.xml
 
 # Visual Studio settings folder
 .vs/
+
+#local environment
+.env
