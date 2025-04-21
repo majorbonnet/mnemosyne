@@ -4,28 +4,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MnemosyneDomain.Queries.Journals
+namespace MnemosyneDomain.Queries.Notebooks
 {
-    public class JournalQueryHandler
+    public class NotebookQueryHandler
     {
         private readonly MnemosyneContext _context;
-        public JournalQueryHandler(MnemosyneContext context)
+        public NotebookQueryHandler(MnemosyneContext context)
         {
             _context = context;
         }
 
-        public List<JournalDto> GetJournalsByUserId(ByUserIdRequest request)
+        public List<NotebookDto> GetNotebooksByUserId(ByUserIdRequest request)
         {
-            List<JournalDto> journals = _context.Journals
+            List<NotebookDto> notebooks = _context.Notebooks
                 .Where(x => x.UserId == request.UserId)
-                .Select(x => new JournalDto(
-                    x.JournalId,
+                .Select(x => new NotebookDto(
+                    x.NotebookId,
                     x.Created,
                     x.Updated,
                     x.Title
                 ))
                 .ToList();
-            return journals;
+            return notebooks;
         }
     }
 }

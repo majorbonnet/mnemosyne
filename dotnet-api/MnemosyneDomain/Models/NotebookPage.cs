@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace MnemosyneDomain.Models;
 
-public partial class JournalPage
+public partial class NotebookPage
 {
-    public Guid JournalPageId { get; set; }
+    public Guid NotebookPageId { get; set; }
 
-    public int JournalId { get; set; }
+    public int NotebookId { get; set; }
 
     public DateTime Created { get; set; }
 
@@ -19,5 +19,5 @@ public partial class JournalPage
 
     public string? Contents { get; set; }
 
-    public virtual Journal Journal { get; set; } = null!;
+    public virtual Notebook Notebook { get; set; } = null!;
 }

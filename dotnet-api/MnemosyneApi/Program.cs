@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
+using MnemosyneApi.Middleware;
 using MnemosyneDomain;
-using MnemosyneDomain.Queries.Journals;
+using MnemosyneDomain.Commands.Notebooks;
+using MnemosyneDomain.Queries.Notebooks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,41 +17,17 @@ builder.AddMnemosyneDomainServices();
 
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, async o =>
+    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, /*async*/ o =>
     {
+        o.RequireHttpsMetadata = false;
         // Set the metadata address for the OpenID configuration
-        o.MetadataAddress = "https://localhost:8443/realms/mnemosyne/.well-known/openid-configuration";
+        o.MetadataAddress = "http://localhost:8080/realms/mnemosyne/.well-known/openid-configuration";
 
         // Set the authority for the authentication server
-        o.Authority = "https://localhost:8443/realms/mnemosyne";
+        o.Authority = "http://localhost:8080/realms/mnemosyne";
 
         // Set the audience for the JWT token
         o.Audience = "account";
-
-        // TODO: fix the SSL issues or turn off SSL for dev
-        // currently getting a root cert untrusted error getting the JWKS from Keycloak in development
-        var handler = new HttpClientHandler()
-        {
-            ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-        };
-
-        HttpClient client = new HttpClient(handler);
-        var jwksJson  = await (await client.GetAsync("https://localhost:8443/realms/mnemosyne/protocol/openid-connect/certs")).Content.ReadAsStringAsync();
-        var jwks = new JsonWebKeySet(jwksJson);
-        var jwk = jwks.GetSigningKeys().FirstOrDefault();
-
-        o.TokenValidationParameters.IssuerSigningKey = jwk;
-        o.TokenValidationParameters.ValidIssuer = "https://localhost:8443/realms/mnemosyne";
-        o.TokenValidationParameters.ValidAudience = "account";
-
-        o.Events = new JwtBearerEvents
-        {
-            OnAuthenticationFailed = (context) =>
-            {
-                var exception = context?.Exception;
-                return Task.CompletedTask;
-            }
-        };
     });
 
 builder.Services.AddAuthorization();
@@ -71,18 +49,30 @@ app.UseCors("localorigins");
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseEnsureUserInfo();
 
-app.MapGet("/api/journals", [Authorize]([FromServices]JournalQueryHandler journalQueryHandler, ClaimsPrincipal user) =>
+app.MapGet("/api/notebooks", [Authorize]([FromServices]NotebookQueryHandler notebookQueryHandler, ClaimsPrincipal user) =>
 {
     string? userIdString = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
     if (userIdString is not null && Guid.TryParse(userIdString, out Guid userId))
     {
-        var journals = journalQueryHandler.GetJournalsByUserId(new ByUserIdRequest(userId));
-        return Results.Ok(journals);
+        var notebooks = notebookQueryHandler.GetNotebooksByUserId(new ByUserIdRequest(userId));
+        return Results.Ok(notebooks);
     }
 
-    return Results.Ok(new List<JournalDto>());
+    return Results.Ok(new List<MnemosyneDomain.Queries.Notebooks.NotebookDto>());
+});
+
+app.MapPost("/api/notebooks", [Authorize] async ([FromServices] NotebookCommandHandler notebookCommandHandler, ClaimsPrincipal user) =>
+{
+    string? userIdString = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+    if (userIdString is not null && Guid.TryParse(userIdString, out Guid userId))
+    {
+        MnemosyneDomain.Commands.Notebooks.NotebookDto notebook = await notebookCommandHandler.Handle(new AddNotebookRequest(userId));
+        return Results.Ok(notebook);
+    }
+    return Results.BadRequest("Invalid user ID.");
 });
 
 app.MapGet("/", () => "");

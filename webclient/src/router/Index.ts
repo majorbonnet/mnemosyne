@@ -2,13 +2,13 @@
 import { createWebHistory, createRouter } from "vue-router";
 
 // COMPONENTS
-import TestView from '../components/TestView.vue';
+import MainDashboard from "../views/MainDashboard.vue"
 
 const routes = [
   {
     path: "/",
     name: "Home",
-    component: TestView
+    component: MainDashboard
   }
 ];
 

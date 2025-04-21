@@ -14,9 +14,9 @@ public partial class MnemosyneContext : DbContext
 
     public virtual DbSet<Image> Images { get; set; }
 
-    public virtual DbSet<Journal> Journals { get; set; }
+    public virtual DbSet<Notebook> Notebooks { get; set; }
 
-    public virtual DbSet<JournalPage> JournalPages { get; set; }
+    public virtual DbSet<NotebookPage> NotebookPages { get; set; }
 
     public virtual DbSet<UserInfo> UserInfos { get; set; }
 
@@ -45,15 +45,15 @@ public partial class MnemosyneContext : DbContext
                 .HasConstraintName("fk_image_user_info");
         });
 
-        modelBuilder.Entity<Journal>(entity =>
+        modelBuilder.Entity<Notebook>(entity =>
         {
-            entity.HasKey(e => e.JournalId).HasName("journal_pkey");
+            entity.HasKey(e => e.NotebookId).HasName("notebook_pkey");
 
-            entity.ToTable("journal");
+            entity.ToTable("notebook");
 
-            entity.Property(e => e.JournalId)
+            entity.Property(e => e.NotebookId)
                 .UseIdentityAlwaysColumn()
-                .HasColumnName("journal_id");
+                .HasColumnName("notebook_id");
             entity.Property(e => e.Created).HasColumnName("created");
             entity.Property(e => e.Title)
                 .HasMaxLength(200)
@@ -61,34 +61,34 @@ public partial class MnemosyneContext : DbContext
             entity.Property(e => e.Updated).HasColumnName("updated");
             entity.Property(e => e.UserId).HasColumnName("user_id");
 
-            entity.HasOne(d => d.User).WithMany(p => p.Journals)
+            entity.HasOne(d => d.User).WithMany(p => p.Notebooks)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("fk_journal_user_info");
+                .HasConstraintName("fk_notebook_user_info");
         });
 
-        modelBuilder.Entity<JournalPage>(entity =>
+        modelBuilder.Entity<NotebookPage>(entity =>
         {
-            entity.HasKey(e => e.JournalPageId).HasName("journal_page_pkey");
+            entity.HasKey(e => e.NotebookPageId).HasName("notebook_page_pkey");
 
-            entity.ToTable("journal_page");
+            entity.ToTable("notebook_page");
 
-            entity.Property(e => e.JournalPageId)
+            entity.Property(e => e.NotebookPageId)
                 .ValueGeneratedNever()
-                .HasColumnName("journal_page_id");
+                .HasColumnName("notebook_page_id");
             entity.Property(e => e.Contents).HasColumnName("contents");
             entity.Property(e => e.Created).HasColumnName("created");
-            entity.Property(e => e.JournalId).HasColumnName("journal_id");
+            entity.Property(e => e.NotebookId).HasColumnName("notebook_id");
             entity.Property(e => e.PageNumber).HasColumnName("page_number");
             entity.Property(e => e.Title)
                 .HasMaxLength(200)
                 .HasColumnName("title");
             entity.Property(e => e.Updated).HasColumnName("updated");
 
-            entity.HasOne(d => d.Journal).WithMany(p => p.JournalPages)
-                .HasForeignKey(d => d.JournalId)
+            entity.HasOne(d => d.Notebook).WithMany(p => p.NotebookPages)
+                .HasForeignKey(d => d.NotebookId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("fk_journal_page_journal");
+                .HasConstraintName("fk_notebook_page_notebook");
         });
 
         modelBuilder.Entity<UserInfo>(entity =>
@@ -100,10 +100,6 @@ public partial class MnemosyneContext : DbContext
             entity.Property(e => e.UserId)
                 .ValueGeneratedNever()
                 .HasColumnName("user_id");
-            entity.Property(e => e.DisplayName)
-                .HasMaxLength(100)
-                .HasColumnName("display_name");
-            entity.Property(e => e.LastLogin).HasColumnName("last_login");
         });
 
         OnModelCreatingPartial(modelBuilder);

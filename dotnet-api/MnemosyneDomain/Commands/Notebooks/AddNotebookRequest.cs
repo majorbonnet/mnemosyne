@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MnemosyneDomain.Queries.Journals
+namespace MnemosyneDomain.Commands.Notebooks
 {
-    public class ByUserIdRequest(Guid userId) : BaseRequest
+    public class AddNotebookRequest(Guid userId) : BaseRequest
     {
         public Guid UserId => userId;
     }

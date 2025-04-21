@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace MnemosyneDomain.Models;
 
-public partial class Journal
+public partial class Notebook
 {
-    public int JournalId { get; set; }
+    public int NotebookId { get; set; }
 
     public Guid UserId { get; set; }
 
@@ -15,7 +15,7 @@ public partial class Journal
 
     public string? Title { get; set; }
 
-    public virtual ICollection<JournalPage> JournalPages { get; set; } = new List<JournalPage>();
+    public virtual ICollection<NotebookPage> NotebookPages { get; set; } = new List<NotebookPage>();
 
     public virtual UserInfo User { get; set; } = null!;
 }

@@ -30,21 +30,21 @@ services:
             - /opt/keycloak/bin/kc.sh
             - --config-file=/run/secrets/keycloak_conf
             - start-dev
-        # only exposing the https page
         ports:
+            - '8080:8080'
             - '8443:8443'
         # the db connection info is set in a secrets file
         secrets:
             - keycloak_conf
-    webclient:
-        depends_on:
-            - auth
-        build: ./webclient
-        image: mnemosyne_webclient
-        ports:
-            - '5173:3000'
-        env_file:
-            - ./webclient/.env
+    #webclient:
+    #    depends_on:
+    #        - auth
+    #    build: ./webclient
+    #    image: mnemosyne_webclient
+    #    ports:
+    #        - '5173:3000'
+    #    env_file:
+    #        - ./webclient/.env
     #dotnetapi:
     #    depends_on:
     #        - auth

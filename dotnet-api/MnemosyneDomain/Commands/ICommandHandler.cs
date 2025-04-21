@@ -10,4 +10,10 @@ namespace MnemosyneDomain.Commands
     {
         Task Handle(T request);
     }
+
+    public interface ICommandHandler<TInput, TOutput> where TInput : class
+        where TOutput : class
+    {
+        Task<TOutput> Handle(TInput request);
+    }
 }

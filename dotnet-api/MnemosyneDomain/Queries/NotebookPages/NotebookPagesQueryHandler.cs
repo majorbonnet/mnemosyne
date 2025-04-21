@@ -4,23 +4,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MnemosyneDomain.Queries.JournalPages
+namespace MnemosyneDomain.Queries.NotebookPages
 {
-    public class JournalPagesQueryHandler
+    public class NotebookPagesQueryHandler
     {
         private readonly MnemosyneContext _context;
-        internal JournalPagesQueryHandler(MnemosyneContext context)
+        internal NotebookPagesQueryHandler(MnemosyneContext context)
         {
             _context = context;
         }
 
-        public List<JournalPageDto> GetJournalPagesByUserId(ByJournalIdRequest request)
+        public List<NotebookPageDto> GetNotebookPagesByNotebookId(ByNotebookIdRequest request)
         {
-            List<JournalPageDto> pages = _context.JournalPages
-                .Where(x => x.JournalId == request.JournalId)
-                .Select(x => new JournalPageDto
+            List<NotebookPageDto> pages = _context.NotebookPages
+                .Where(x => x.NotebookId == request.NotebookId)
+                .Select(x => new NotebookPageDto
                 (
-                    x.JournalPageId,
+                    x.NotebookPageId,
                     x.Created,
                     x.Updated,
                     x.PageNumber,

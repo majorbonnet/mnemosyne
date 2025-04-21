@@ -13,7 +13,7 @@ public partial class Image
 
     public DateTime Updated { get; set; }
 
-    public required string ImageKey { get; set; }
+    public string ImageKey { get; set; } = null!;
 
     public string? AltText { get; set; }
 
