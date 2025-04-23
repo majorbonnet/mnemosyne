@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MnemosyneDomain.Authorization;
 
 namespace MnemosyneDomain.Commands.Notebooks
 {
-    public class DeleteNotebookRequest(int notebookId) : BaseRequest
+    public class DeleteNotebook(User user, int notebookId) : BaseRequest
     {
+        public User User => user;
         public int NotebookId => notebookId;
     }
 

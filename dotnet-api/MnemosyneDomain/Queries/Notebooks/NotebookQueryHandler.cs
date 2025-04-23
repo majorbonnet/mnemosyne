@@ -3,28 +3,32 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using MnemosyneDomain.Authorization;
 
 namespace MnemosyneDomain.Queries.Notebooks
 {
     public class NotebookQueryHandler
     {
         private readonly MnemosyneContext _context;
+
         public NotebookQueryHandler(MnemosyneContext context)
         {
             _context = context;
         }
 
-        public List<NotebookDto> GetNotebooksByUserId(ByUserIdRequest request)
+        public async Task<List<Notebook>> HandleAsync(GetNotebooks request)
         {
-            List<NotebookDto> notebooks = _context.Notebooks
-                .Where(x => x.UserId == request.UserId)
-                .Select(x => new NotebookDto(
+            List<Notebook> notebooks = await _context.Notebooks
+                .Where(x => x.UserId == request.User.UserId)
+                .Select(x => new Notebook(
                     x.NotebookId,
                     x.Created,
                     x.Updated,
                     x.Title
                 ))
-                .ToList();
+                .ToListAsync();
+
             return notebooks;
         }
     }

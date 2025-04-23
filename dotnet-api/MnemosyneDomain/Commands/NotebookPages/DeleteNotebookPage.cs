@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MnemosyneDomain.Models;
+using MnemosyneDomain.Authorization;
 
 namespace MnemosyneDomain.Commands.NotebookPages
 {
-    public class UpdateNotebookPageRequest(Guid notebookPageId, string? title, string contents) : BaseRequest
+    public class DeleteNotebookPage(User user, Guid notebookPageId) : BaseRequest
     {
+        public User User => user;
         public Guid NotebookPageId => notebookPageId;
-        public string? Title => title;
-        public string Contents => contents;
     }
 }

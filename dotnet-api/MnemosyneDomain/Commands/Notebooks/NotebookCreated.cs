@@ -6,8 +6,5 @@ using System.Threading.Tasks;
 
 namespace MnemosyneDomain.Commands.Notebooks
 {
-    public class AddNotebookRequest(Guid userId) : BaseRequest
-    {
-        public Guid UserId => userId;
-    }
+    public record NotebookCreated(int NotebookId, DateTime Created, DateTime Updated);
 }

@@ -3,8 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MnemosyneDomain.Authorization;
 
 namespace MnemosyneDomain.Queries.Notebooks
 {
-    public record NotebookDto(int NotebookId, DateTime Created, DateTime Updated, string? Title);
+    public class GetNotebooks(User user) : BaseRequest
+    {
+        public User User => user;
+    }
 }

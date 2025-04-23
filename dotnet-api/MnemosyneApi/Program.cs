@@ -1,20 +1,21 @@
-using System.Reflection.Metadata.Ecma335;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.JsonWebTokens;
-using Microsoft.IdentityModel.Tokens;
 using MnemosyneApi.Middleware;
 using MnemosyneDomain;
-using MnemosyneDomain.Commands.Notebooks;
-using MnemosyneDomain.Queries.Notebooks;
+using Wolverine;
+using Wolverine.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddMnemosyneDomainServices();
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
+builder.Host.UseWolverine(opts =>
+{
+    opts.Discovery.IncludeAssembly(typeof(MnemosyneContext).Assembly);
+});
+builder.Services.AddWolverineHttp();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, /*async*/ o =>
@@ -49,32 +50,16 @@ app.UseCors("localorigins");
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseEnsureUserInfo();
 
-app.MapGet("/api/notebooks", [Authorize]([FromServices]NotebookQueryHandler notebookQueryHandler, ClaimsPrincipal user) =>
+app.UseSwagger();
+app.UseSwaggerUI();
+
+app.MapWolverineEndpoints(opts => 
 {
-    string? userIdString = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-
-    if (userIdString is not null && Guid.TryParse(userIdString, out Guid userId))
-    {
-        var notebooks = notebookQueryHandler.GetNotebooksByUserId(new ByUserIdRequest(userId));
-        return Results.Ok(notebooks);
-    }
-
-    return Results.Ok(new List<MnemosyneDomain.Queries.Notebooks.NotebookDto>());
+    opts.RequireAuthorizeOnAll();
+    opts.AddMiddleware(typeof(VerifyUserMiddleware));
 });
 
-app.MapPost("/api/notebooks", [Authorize] async ([FromServices] NotebookCommandHandler notebookCommandHandler, ClaimsPrincipal user) =>
-{
-    string? userIdString = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-    if (userIdString is not null && Guid.TryParse(userIdString, out Guid userId))
-    {
-        MnemosyneDomain.Commands.Notebooks.NotebookDto notebook = await notebookCommandHandler.Handle(new AddNotebookRequest(userId));
-        return Results.Ok(notebook);
-    }
-    return Results.BadRequest("Invalid user ID.");
-});
-
-app.MapGet("/", () => "");
+app.MapGet("/", () => Results.Redirect("/swagger"));
 
 app.Run();

@@ -3,22 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using MnemosyneDomain.Authorization;
 
 namespace MnemosyneDomain.Queries.NotebookPages
 {
     public class NotebookPagesQueryHandler
     {
         private readonly MnemosyneContext _context;
-        internal NotebookPagesQueryHandler(MnemosyneContext context)
+        private readonly AuthorizationHandler _authService;
+        public NotebookPagesQueryHandler(MnemosyneContext context, AuthorizationHandler authService)
         {
             _context = context;
+            _authService = authService;
         }
 
-        public List<NotebookPageDto> GetNotebookPagesByNotebookId(ByNotebookIdRequest request)
+        public async Task<List<NotebookPage>> HandleAsync(GetNotebookPages request)
         {
-            List<NotebookPageDto> pages = _context.NotebookPages
+            if (!_authService.IsAuthorized(request.User, request.NotebookId, AuthorizationPolicies.NotebookOwner)) return new List<NotebookPage>();
+
+            List<NotebookPage> pages = await _context.NotebookPages
                 .Where(x => x.NotebookId == request.NotebookId)
-                .Select(x => new NotebookPageDto
+                .Select(x => new NotebookPage
                 (
                     x.NotebookPageId,
                     x.Created,
@@ -27,7 +33,7 @@ namespace MnemosyneDomain.Queries.NotebookPages
                     x.Title,
                     x.Contents
                 ))
-                .ToList();
+                .ToListAsync();
 
             return pages;
         }

@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace MnemosyneDomain.Queries.NotebookPages
 {
-    public record NotebookPageDto (Guid NotebookPageId, DateTime Created, DateTime Updated, int PageNumber, string? Title, string? Contents);
+    public record NotebookPage (Guid NotebookPageId, DateTime Created, DateTime Updated, int PageNumber, string? Title, string? Contents);
 }

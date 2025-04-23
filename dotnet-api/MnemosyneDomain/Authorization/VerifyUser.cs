@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MnemosyneDomain.Queries.Notebooks
+namespace MnemosyneDomain.Authorization
 {
-    public class ByUserIdRequest(Guid userId) : BaseRequest
+    public class VerifyUser(Guid userId) : BaseRequest
     {
         public Guid UserId => userId;
     }

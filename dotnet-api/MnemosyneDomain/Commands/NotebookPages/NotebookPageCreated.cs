@@ -6,8 +6,5 @@ using System.Threading.Tasks;
 
 namespace MnemosyneDomain.Commands.NotebookPages
 {
-    public class DeleteNotebookPageRequest(Guid notebookPageId) : BaseRequest
-    {
-        public Guid NotebookPageId => notebookPageId;
-    }
+    public record NotebookPageCreated(int NotebookId, Guid NotebookPageId, int PageNumber);
 }
