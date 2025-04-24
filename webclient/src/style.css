@@ -4,15 +4,25 @@
   width: 100%;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+:root {
+  /* pastel color triad */
+  --pink-color: #edc4ce;
+  --green-color: #ceedc4;
+  --blue-color: #c4ceed;
+
+  --pink-color-hover: #dcb3bd;
+
+  --dark-blue-color: #808aa9;
+
+  --light-black: #111111;
+  --dark-black: #070707;
+
+  --near-white: #cecece;
+
+  color: var(--near-white);
+  background-color:var(--light-black);
+
+  font-family: 'Courier New', Courier, monospace;
 }
+
+

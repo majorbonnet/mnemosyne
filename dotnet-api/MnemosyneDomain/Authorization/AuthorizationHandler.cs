@@ -36,6 +36,17 @@ namespace MnemosyneDomain.Authorization
 
                 _context.Notebooks.Add(defaultNotebook);
 
+                NotebookPage defaultPage = new()
+                {
+                    Notebook = defaultNotebook,
+                    NotebookPageId = Guid.NewGuid(),
+                    Created = DateTime.UtcNow,
+                    Updated = DateTime.UtcNow,
+                    Title = "Default Page"
+                };
+
+                _context.NotebookPages.Add(defaultPage);
+
                 await _context.SaveChangesAsync();
             }
         }

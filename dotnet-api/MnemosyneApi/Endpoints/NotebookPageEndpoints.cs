@@ -14,7 +14,7 @@ namespace MnemosyneApi.Endpoints
         /// <param name="bus"></param>
         /// <param name="request"></param>
         /// <returns>A list of <see cref="NotebookPage"/> instances</returns>
-        [WolverineGet("/api/notebooks/{notebookId}/pages")]
+        [WolverineGet("/api/notebooks/{notebookId}")]
         public static async Task<List<NotebookPage>> GetNotebookPages(
             IMessageBus bus,
             [NotBody] User user,
@@ -29,7 +29,7 @@ namespace MnemosyneApi.Endpoints
         /// <param name="bus"></param>
         /// <param name="request"></param>
         /// <returns>A <see cref="NotebookPageCreated"/> instance with the new page info</returns>
-        [WolverinePost("/api/notebooks/{notebookId}/pages")]
+        [WolverinePost("/api/notebooks/{notebookId}")]
         public static async Task<NotebookPageCreated> CreateNotebookPage(
             IMessageBus bus,
             [NotBody] User user,
