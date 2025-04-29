@@ -6,10 +6,9 @@ using Npgsql.Internal;
 
 namespace MnemosyneDomain.Authorization
 {
-    public class AuthorizationHandler
+    public class AuthorizationHandler : IAuthorizationHandler
     {
         private readonly MnemosyneContext _context;
-        private User? _user;
 
         public AuthorizationHandler(MnemosyneContext context)
         {

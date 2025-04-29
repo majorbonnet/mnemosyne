@@ -5,17 +5,18 @@ using System.Text;
 using System.Threading.Tasks;
 using MnemosyneDomain.Authorization;
 using MnemosyneDomain.Models;
+using MnemosyneDomain.Repositories;
 
 namespace MnemosyneDomain.Commands.NotebookPages
 {
     public class NotebookPageCommandHandler
     {
-        private readonly MnemosyneContext _context;
-        private readonly AuthorizationHandler _authService;
+        private readonly INotebookPageRepository _repository;
+        private readonly IAuthorizationHandler _authService;
 
-        public NotebookPageCommandHandler(MnemosyneContext context, AuthorizationHandler authService)
+        public NotebookPageCommandHandler(INotebookPageRepository repository, IAuthorizationHandler authService)
         {
-            _context = context;
+            _repository = repository;
             _authService = authService;
         }
 
@@ -23,7 +24,7 @@ namespace MnemosyneDomain.Commands.NotebookPages
         {
             if (!_authService.IsAuthorized(request.User, request.NotebookId, AuthorizationPolicies.NotebookOwner)) return;
 
-            int existingPageCount = _context.NotebookPages.Count(p => p.NotebookId == request.NotebookId);
+            int existingPageCount = await _repository.GetPageCountAsync(request.NotebookId);
 
             NotebookPage page = new()
             {
@@ -33,35 +34,29 @@ namespace MnemosyneDomain.Commands.NotebookPages
                 PageNumber = existingPageCount
             };
 
-            await _context.NotebookPages.AddAsync(page);
-            await _context.SaveChangesAsync();
+            await _repository.AddPageAsync(page);
         }
 
         public async Task HandleAsync(DeleteNotebookPage request)
         {
-            NotebookPage? page = _context.NotebookPages.Find(request.NotebookPageId);
-            
-            if (page is not null)
-            {
-                if (!_authService.IsAuthorized(request.User, page.NotebookId, AuthorizationPolicies.NotebookOwner)) return;
+            if (!_authService.IsAuthorized(request.User, request.NotebookId, AuthorizationPolicies.NotebookOwner)) return;
 
-                _context.NotebookPages.Remove(page);
-                await _context.SaveChangesAsync();
-            }
+            await _repository.RemovePageAsync(request.NotebookPageId);
         }
 
         public async Task HandleAsync(UpdateNotebookPage request)
         {
-            NotebookPage? page = _context.NotebookPages.Find(request.NotebookPageId);
+            if (!_authService.IsAuthorized(request.User, request.NotebookId, AuthorizationPolicies.NotebookOwner)) return;
+
+            NotebookPage? page = await _repository.GetPageByIdAsync(request.NotebookPageId);
 
             if (page is not null)
             {
-                if (!_authService.IsAuthorized(request.User, page.NotebookId, AuthorizationPolicies.NotebookOwner)) return;
-
                 page.Contents = request.Contents;
                 page.Title = request.Title;
                 page.Updated = DateTime.UtcNow;
-                await _context.SaveChangesAsync();
+
+                await _repository.UpdatePageAsync(page);
             }
         }
     }

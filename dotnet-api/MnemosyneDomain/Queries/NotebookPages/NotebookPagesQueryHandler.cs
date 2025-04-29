@@ -11,8 +11,8 @@ namespace MnemosyneDomain.Queries.NotebookPages
     public class NotebookPagesQueryHandler
     {
         private readonly MnemosyneContext _context;
-        private readonly AuthorizationHandler _authService;
-        public NotebookPagesQueryHandler(MnemosyneContext context, AuthorizationHandler authService)
+        private readonly IAuthorizationHandler _authService;
+        public NotebookPagesQueryHandler(MnemosyneContext context, IAuthorizationHandler authService)
         {
             _context = context;
             _authService = authService;

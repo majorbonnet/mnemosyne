@@ -13,8 +13,8 @@ namespace MnemosyneDomain.Commands.Notebooks
     public class NotebookCommandHandler
     {
         private readonly MnemosyneContext _context;
-        private readonly AuthorizationHandler _authService;
-        public NotebookCommandHandler(MnemosyneContext context, AuthorizationHandler authService)
+        private readonly IAuthorizationHandler _authService;
+        public NotebookCommandHandler(MnemosyneContext context, IAuthorizationHandler authService)
         {
             _context = context;
             _authService = authService;

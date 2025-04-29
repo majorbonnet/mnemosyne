@@ -55,7 +55,7 @@ namespace MnemosyneApi.Endpoints
         {
             if (request.Contents is null && request.Title is null) return;
 
-            await bus.InvokeAsync(new UpdateNotebookPage(user, notebookPageId, request.Title, request.Contents));
+            await bus.InvokeAsync(new UpdateNotebookPage(user, notebookId, notebookPageId, request.Title, request.Contents));
         }
     }
 }
