@@ -13,6 +13,7 @@
     "axios": "^1.8.4",
     "cors": "^2.8.5",
     "keycloak-js": "^26.1.5",
+    "lodash.debounce": "^4.0.8",
     "pinia": "^3.0.2",
     "pinia-plugin-persistedstate": "^4.2.0",
     "tailwindcss": "^4.1.4",
@@ -20,6 +21,7 @@
     "vue-router": "^4.5.0"
   },
   "devDependencies": {
+    "@types/lodash.debounce": "^4.0.9",
     "@vitejs/plugin-vue": "^5.2.1",
     "@vue/tsconfig": "^0.7.0",
     "typescript": "~5.7.2",

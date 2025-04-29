@@ -7,5 +7,4 @@ export default interface Notebook {
     title: string;
 
     pages: NotebookPage[];
-    selectedPage: NotebookPage | null;
 }

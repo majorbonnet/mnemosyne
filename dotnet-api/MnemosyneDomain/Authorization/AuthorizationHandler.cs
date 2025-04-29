@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MnemosyneDomain.Authorization.Requirements;
+using MnemosyneDomain.Commands.Notebooks;
 using MnemosyneDomain.Models;
+using Npgsql.Internal;
 
 namespace MnemosyneDomain.Authorization
 {
@@ -14,7 +16,7 @@ namespace MnemosyneDomain.Authorization
             _context = context;
         }
 
-        public async Task HandleAsync(VerifyUser request)
+        public async Task<CreateNotebook?> HandleAsync(VerifyUser request)
         {
             UserInfo? user = _context.UserInfos.FirstOrDefault(x => x.UserId == request.UserId);
 
@@ -27,28 +29,12 @@ namespace MnemosyneDomain.Authorization
 
                 _context.UserInfos.Add(user);
 
-                Notebook defaultNotebook = new()
-                {
-                    UserId = request.UserId,
-                    Created = DateTime.UtcNow,
-                    Updated = DateTime.UtcNow
-                };
-
-                _context.Notebooks.Add(defaultNotebook);
-
-                NotebookPage defaultPage = new()
-                {
-                    Notebook = defaultNotebook,
-                    NotebookPageId = Guid.NewGuid(),
-                    Created = DateTime.UtcNow,
-                    Updated = DateTime.UtcNow,
-                    Title = "Default Page"
-                };
-
-                _context.NotebookPages.Add(defaultPage);
-
                 await _context.SaveChangesAsync();
+
+                return new CreateNotebook(new User(request.UserId));
             }
+
+            return null;
         }
 
         /// <summary>

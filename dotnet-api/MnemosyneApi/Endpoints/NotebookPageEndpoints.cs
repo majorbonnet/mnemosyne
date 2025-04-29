@@ -1,4 +1,5 @@
-﻿using MnemosyneDomain.Authorization;
+﻿using Microsoft.AspNetCore.Mvc;
+using MnemosyneDomain.Authorization;
 using MnemosyneDomain.Commands.NotebookPages;
 using MnemosyneDomain.Queries.NotebookPages;
 using Wolverine;
@@ -36,6 +37,25 @@ namespace MnemosyneApi.Endpoints
             int notebookId)
         {
             return await bus.InvokeAsync<NotebookPageCreated>(new CreateNotebookPage(user, notebookId));
+        }
+
+        public class UpdateNotebookPageRequest
+        {
+            public string? Title { get; set; }
+            public string? Contents { get; set; }
+        }
+
+        [WolverinePost("/api/notebooks/{notebookId}/{notebookPageId}")]
+        public static async Task UpdateNotebookPage(
+            IMessageBus bus,
+            [NotBody] User user,
+            int notebookId,
+            Guid notebookPageId,
+            UpdateNotebookPageRequest request)
+        {
+            if (request.Contents is null && request.Title is null) return;
+
+            await bus.InvokeAsync(new UpdateNotebookPage(user, notebookPageId, request.Title, request.Contents));
         }
     }
 }

@@ -8,11 +8,11 @@ using MnemosyneDomain.Models;
 
 namespace MnemosyneDomain.Commands.NotebookPages
 {
-    public class UpdateNotebookPage(User user, Guid notebookPageId, string? title, string contents) : BaseRequest
+    public class UpdateNotebookPage(User user, Guid notebookPageId, string? title, string? contents) : BaseRequest
     {
         public User User => user;
         public Guid NotebookPageId => notebookPageId;
         public string? Title => title;
-        public string Contents => contents;
+        public string? Contents => contents;
     }
 }

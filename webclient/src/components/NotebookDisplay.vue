@@ -7,10 +7,10 @@ const notebookStore = useNotebookStore();
 </script>
 
 <template>
-    <main>
-        <div>
-            {{ notebookStore.selectedNotebook?.selectedPage?.contents ?? "No content on page yet" }}
-        </div>
+    <main class="h-full">
+        <textarea v-model="notebookStore.selectedPage.contents" class="h-full w-full">
+
+        </textarea>
     </main>
 </template>
 

@@ -29,7 +29,17 @@ namespace MnemosyneDomain.Commands.Notebooks
                 UserId = request.User.UserId
             };
 
+            NotebookPage defaultPage = new()
+            {
+                Notebook = newNotebook,
+                NotebookPageId = Guid.NewGuid(),
+                Created = DateTime.UtcNow,
+                Updated = DateTime.UtcNow
+            };
+
             await _context.Notebooks.AddAsync(newNotebook);
+            await _context.NotebookPages.AddAsync(defaultPage);
+
             await _context.SaveChangesAsync();
 
             return new NotebookCreated(
