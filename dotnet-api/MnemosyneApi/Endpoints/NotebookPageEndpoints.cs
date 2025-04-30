@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MnemosyneDomain.Authorization;
 using MnemosyneDomain.Commands.NotebookPages;
+using MnemosyneDomain.Events;
 using MnemosyneDomain.Queries.NotebookPages;
 using Wolverine;
 using Wolverine.Http;

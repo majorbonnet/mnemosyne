@@ -6,17 +6,21 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using MnemosyneDomain.Authorization;
+using MnemosyneDomain.Events;
 using MnemosyneDomain.Models;
+using MnemosyneDomain.Repositories;
 
 namespace MnemosyneDomain.Commands.Notebooks
 {
     public class NotebookCommandHandler
     {
-        private readonly MnemosyneContext _context;
+        private readonly INotebookRepository _repository;
         private readonly IAuthorizationHandler _authService;
-        public NotebookCommandHandler(MnemosyneContext context, IAuthorizationHandler authService)
+        public NotebookCommandHandler(
+            INotebookRepository _repository,
+            IAuthorizationHandler authService)
         {
-            _context = context;
+            this._repository = _repository;
             _authService = authService;
         }
 
@@ -29,20 +33,10 @@ namespace MnemosyneDomain.Commands.Notebooks
                 UserId = request.User.UserId
             };
 
-            NotebookPage defaultPage = new()
-            {
-                Notebook = newNotebook,
-                NotebookPageId = Guid.NewGuid(),
-                Created = DateTime.UtcNow,
-                Updated = DateTime.UtcNow
-            };
-
-            await _context.Notebooks.AddAsync(newNotebook);
-            await _context.NotebookPages.AddAsync(defaultPage);
-
-            await _context.SaveChangesAsync();
+            await _repository.AddNotebookAsync(newNotebook);
 
             return new NotebookCreated(
+                request.User,
                 newNotebook.NotebookId,
                 newNotebook.Created,
                 newNotebook.Updated
@@ -51,15 +45,9 @@ namespace MnemosyneDomain.Commands.Notebooks
 
         public async Task HandleAsync(DeleteNotebook request)
         {
-            Notebook? notebook = await _context.Notebooks.FindAsync(request.NotebookId);
+            if (!_authService.IsAuthorized(request.User, request.NotebookId, AuthorizationPolicies.NotebookOwner)) return;
 
-            if (notebook is not null)
-            {
-                if (!_authService.IsAuthorized(request.User, notebook.NotebookId, AuthorizationPolicies.NotebookOwner)) return;
-
-                _context.Notebooks.Remove(notebook);
-                await _context.SaveChangesAsync();
-            } 
+            await _repository.RemoveNotebookAsync(request.NotebookId);
         }
     }
 }

@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using MnemosyneDomain.Authorization;
+﻿using MnemosyneDomain.Authorization;
+using MnemosyneDomain.Repositories;
 
 namespace MnemosyneDomain.Queries.NotebookPages
 {
     public class NotebookPagesQueryHandler
     {
-        private readonly MnemosyneContext _context;
+        private readonly INotebookPageRepository _repository;
         private readonly IAuthorizationHandler _authService;
-        public NotebookPagesQueryHandler(MnemosyneContext context, IAuthorizationHandler authService)
+        public NotebookPagesQueryHandler(INotebookPageRepository repository, IAuthorizationHandler authService)
         {
-            _context = context;
+            _repository = repository;
             _authService = authService;
         }
 
@@ -22,8 +17,7 @@ namespace MnemosyneDomain.Queries.NotebookPages
         {
             if (!_authService.IsAuthorized(request.User, request.NotebookId, AuthorizationPolicies.NotebookOwner)) return new List<NotebookPage>();
 
-            List<NotebookPage> pages = await _context.NotebookPages
-                .Where(x => x.NotebookId == request.NotebookId)
+            List<NotebookPage> pages = (await _repository.GetPagesByNotebookIdAsync(request.NotebookId))
                 .Select(x => new NotebookPage
                 (
                     x.NotebookPageId,
@@ -33,7 +27,7 @@ namespace MnemosyneDomain.Queries.NotebookPages
                     x.Title,
                     x.Contents
                 ))
-                .ToListAsync();
+                .ToList();
 
             return pages;
         }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MnemosyneDomain.Authorization;
+using MnemosyneDomain.Events;
 using MnemosyneDomain.Models;
 using MnemosyneDomain.Repositories;
 
@@ -20,9 +21,9 @@ namespace MnemosyneDomain.Commands.NotebookPages
             _authService = authService;
         }
 
-        public async Task HandleAsync(CreateNotebookPage request)
+        public async Task<NotebookPageCreated?> HandleAsync(CreateNotebookPage request)
         {
-            if (!_authService.IsAuthorized(request.User, request.NotebookId, AuthorizationPolicies.NotebookOwner)) return;
+            if (!_authService.IsAuthorized(request.User, request.NotebookId, AuthorizationPolicies.NotebookOwner)) return null;
 
             int existingPageCount = await _repository.GetPageCountAsync(request.NotebookId);
 
@@ -31,10 +32,18 @@ namespace MnemosyneDomain.Commands.NotebookPages
                 Created = DateTime.UtcNow,
                 Updated = DateTime.UtcNow,
                 NotebookId = request.NotebookId,
+                NotebookPageId = Guid.NewGuid(),
                 PageNumber = existingPageCount
             };
 
             await _repository.AddPageAsync(page);
+
+            return new NotebookPageCreated(
+                request.User,
+                request.NotebookId,
+                page.NotebookPageId,
+                page.PageNumber
+            );
         }
 
         public async Task HandleAsync(DeleteNotebookPage request)

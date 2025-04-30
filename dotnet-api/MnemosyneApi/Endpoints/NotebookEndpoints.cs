@@ -1,5 +1,6 @@
 ﻿using MnemosyneDomain.Authorization;
 using MnemosyneDomain.Commands.Notebooks;
+using MnemosyneDomain.Events;
 using MnemosyneDomain.Queries.Notebooks;
 using Wolverine;
 using Wolverine.Http;

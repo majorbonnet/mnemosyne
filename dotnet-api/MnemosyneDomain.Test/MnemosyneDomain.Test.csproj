@@ -24,9 +24,4 @@
     <Using Include="NUnit.Framework" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Commands\NotebookPages\" />
-    <Folder Include="Queries\" />
-  </ItemGroup>
-
 </Project>
