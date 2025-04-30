@@ -4,66 +4,62 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MnemosyneDomain.Authorization;
+using MnemosyneDomain.Authorization.Requirements;
 using MnemosyneDomain.Commands.Notebooks;
 using MnemosyneDomain.Repositories;
-using MnemosyneDomain.Test.Fakes;
+using MnemosyneDomain.Test.Utilities;
+using Moq;
 
 namespace MnemosyneDomain.Test.Commands.Notebooks
 {
     public class DeleteNotebookHandler
     {
-        private FakeNotebookRepository _notebookRepository;
-        private FakeAuthorizationHandler _authorizationHandler;
-        private NotebookCommandHandler _handler;
-
         [SetUp]
         public void Setup()
         {
-            _notebookRepository = new FakeNotebookRepository();
-            _authorizationHandler = new FakeAuthorizationHandler();
 
-            _handler = new NotebookCommandHandler(
-                _notebookRepository,
-                _authorizationHandler
-            );
-
-            // Pre-populate the repository with a notebook for testing
-            _notebookRepository.Notebooks.Add(new Models.Notebook
-            {
-                NotebookId = 1,
-                UserId = Guid.NewGuid(),
-                Title = "Test Notebook",
-                Created = DateTime.UtcNow,
-                Updated = DateTime.UtcNow
-            });
         }
 
         [Test]
         public async Task ShouldRemoveANotebookFromTheRepository()
         {
-            // pre-condition: one notebook in the repository
-            Assert.That(_notebookRepository.Notebooks.Count, Is.EqualTo(1));
+            var repositoryMock = new Mock<IRepository<Models.Notebook>>();
+            repositoryMock.Setup(r => r.DeleteAsync(It.IsAny<Models.Notebook>()))
+                .Returns(Task.CompletedTask);
 
-            _authorizationHandler.SetIsAuthorized(true);
+            var authHandlerMock = MockAuthorizationHandler.GetAlwaysAuthorizedMock();
+
+            var handler = new NotebookCommandHandler(
+                repositoryMock.Object,
+                authHandlerMock.Object
+            );
+
             var command = new DeleteNotebook(new User(Guid.NewGuid()), 1);
 
-            await _handler.HandleAsync(command);
+            await handler.HandleAsync(command);
 
-            Assert.That(_notebookRepository.Notebooks.Count, Is.EqualTo(0));
+            repositoryMock.Verify(r => r.DeleteAsync(It.Is<Models.Notebook>(n => n.NotebookId == 1)), Times.Once);
         }
 
         [Test]
         public async Task ShouldDoNothingIfUserIsNotAuthorized()
         {
-            // pre-condition: one notebook in the repository
-            Assert.That(_notebookRepository.Notebooks.Count, Is.EqualTo(1));
+            var repositoryMock = new Mock<IRepository<Models.Notebook>>();
+            repositoryMock.Setup(r => r.DeleteAsync(It.IsAny<Models.Notebook>()))
+                .Returns(Task.CompletedTask);
 
-            _authorizationHandler.SetIsAuthorized(false);
+            var authHandlerMock = MockAuthorizationHandler.GetAlwaysUnauthorizedMock();
+
+            var handler = new NotebookCommandHandler(
+                repositoryMock.Object,
+                authHandlerMock.Object
+            );
+
             var command = new DeleteNotebook(new User(Guid.NewGuid()), 1);
 
-            await _handler.HandleAsync(command);
+            await handler.HandleAsync(command);
 
-            Assert.That(_notebookRepository.Notebooks.Count, Is.EqualTo(1));
+            repositoryMock.Verify(r => r.DeleteAsync(It.IsAny<Models.Notebook>()), Times.Never);
         }
     }
 }

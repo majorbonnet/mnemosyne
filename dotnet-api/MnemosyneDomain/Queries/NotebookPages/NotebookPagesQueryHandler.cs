@@ -5,9 +5,9 @@ namespace MnemosyneDomain.Queries.NotebookPages
 {
     public class NotebookPagesQueryHandler
     {
-        private readonly INotebookPageRepository _repository;
+        private readonly IRepository<Models.NotebookPage> _repository;
         private readonly IAuthorizationHandler _authService;
-        public NotebookPagesQueryHandler(INotebookPageRepository repository, IAuthorizationHandler authService)
+        public NotebookPagesQueryHandler(IRepository<Models.NotebookPage> repository, IAuthorizationHandler authService)
         {
             _repository = repository;
             _authService = authService;
@@ -15,9 +15,9 @@ namespace MnemosyneDomain.Queries.NotebookPages
 
         public async Task<List<NotebookPage>> HandleAsync(GetNotebookPages request)
         {
-            if (!_authService.IsAuthorized(request.User, request.NotebookId, AuthorizationPolicies.NotebookOwner)) return new List<NotebookPage>();
+            if (!await _authService.IsAuthorizedAsync(request.User, request.NotebookId, AuthorizationPolicies.NotebookOwner)) return new List<NotebookPage>();
 
-            List<NotebookPage> pages = (await _repository.GetPagesByNotebookIdAsync(request.NotebookId))
+            List<NotebookPage> pages = _repository.Find(p => p.NotebookId == request.NotebookId)
                 .Select(x => new NotebookPage
                 (
                     x.NotebookPageId,

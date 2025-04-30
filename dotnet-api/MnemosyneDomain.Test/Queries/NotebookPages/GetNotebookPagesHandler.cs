@@ -1,99 +1,96 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using MnemosyneDomain.Authorization;
+using MnemosyneDomain.Authorization.Requirements;
 using MnemosyneDomain.Commands.NotebookPages;
 using MnemosyneDomain.Queries.NotebookPages;
 using MnemosyneDomain.Repositories;
-using MnemosyneDomain.Test.Fakes;
+using MnemosyneDomain.Test.Utilities;
+using Moq;
 
 namespace MnemosyneDomain.Test.Queries.NotebookPages
 {
     public class GetNotebookPagesHandler
     {
-        private FakeAuthorizationHandler _authorizationHandler;
-        private FakeNotebookPageRepository _notebookPageRepository;
-        private NotebookPagesQueryHandler _notebookPageQueryHandler;
-
-        [SetUp]
-        public async Task Setup()
-        {
-            _authorizationHandler = new FakeAuthorizationHandler();
-            _notebookPageRepository = new FakeNotebookPageRepository();
-            _notebookPageQueryHandler = new NotebookPagesQueryHandler(
-                _notebookPageRepository,
-                _authorizationHandler
-            );
-
-            await _notebookPageRepository.AddPageAsync(new Models.NotebookPage
-            {
-                NotebookPageId = Guid.NewGuid(),
-                NotebookId = 1,
-                PageNumber = 0,
-                Created = DateTime.UtcNow,
-                Updated = DateTime.UtcNow,
-                Title = "Test Page",
-                Contents = "This is a test page."
-            });
-
-            await _notebookPageRepository.AddPageAsync(new Models.NotebookPage
-            {
-                NotebookPageId = Guid.NewGuid(),
-                NotebookId = 1,
-                PageNumber = 1,
-                Created = DateTime.UtcNow,
-                Updated = DateTime.UtcNow,
-                Title = "Test Page",
-                Contents = "This is a test page."
-            });
-
-            await _notebookPageRepository.AddPageAsync(new Models.NotebookPage
-            {
-                NotebookPageId = Guid.NewGuid(),
-                NotebookId = 2,
-                PageNumber = 0,
-                Created = DateTime.UtcNow,
-                Updated = DateTime.UtcNow,
-                Title = "Test Page",
-                Contents = "This is a test page."
-            });
-
-            await _notebookPageRepository.AddPageAsync(new Models.NotebookPage
-            {
-                NotebookPageId = Guid.NewGuid(),
-                NotebookId = 3,
-                PageNumber = 0,
-                Created = DateTime.UtcNow,
-                Updated = DateTime.UtcNow,
-                Title = "Test Page",
-                Contents = "This is a test page."
-            });
-
-            await _notebookPageRepository.AddPageAsync(new Models.NotebookPage
-            {
-                NotebookPageId = Guid.NewGuid(),
-                NotebookId = 3,
-                PageNumber = 1,
-                Created = DateTime.UtcNow,
-                Updated = DateTime.UtcNow,
-                Title = "Test Page",
-                Contents = "This is a test page."
-            });
-        }
-
         [Test]
         public async Task ShouldReturnThePagesForANotebook()
         {
-            _authorizationHandler.SetIsAuthorized(true);
+             var pages = new List<Models.NotebookPage> {
+                new Models.NotebookPage
+                {
+                    NotebookPageId = Guid.NewGuid(),
+                    NotebookId = 1,
+                    PageNumber = 0,
+                    Created = DateTime.UtcNow,
+                    Updated = DateTime.UtcNow,
+                    Title = "Test Page",
+                    Contents = "This is a test page."
+                },
 
-            // Assert the pre-condition is true
-            Assert.That(_notebookPageRepository.NotebookPages.Count(p => p.NotebookId == 1), Is.EqualTo(2));
+                new Models.NotebookPage
+                {
+                    NotebookPageId = Guid.NewGuid(),
+                    NotebookId = 1,
+                    PageNumber = 1,
+                    Created = DateTime.UtcNow,
+                    Updated = DateTime.UtcNow,
+                    Title = "Test Page",
+                    Contents = "This is a test page."
+                },
+
+                new Models.NotebookPage
+                {
+                    NotebookPageId = Guid.NewGuid(),
+                    NotebookId = 2,
+                    PageNumber = 0,
+                    Created = DateTime.UtcNow,
+                    Updated = DateTime.UtcNow,
+                    Title = "Test Page",
+                    Contents = "This is a test page."
+                },
+
+                new Models.NotebookPage
+                {
+                    NotebookPageId = Guid.NewGuid(),
+                    NotebookId = 3,
+                    PageNumber = 0,
+                    Created = DateTime.UtcNow,
+                    Updated = DateTime.UtcNow,
+                    Title = "Test Page",
+                    Contents = "This is a test page."
+                },
+
+                new Models.NotebookPage
+                {
+                    NotebookPageId = Guid.NewGuid(),
+                    NotebookId = 3,
+                    PageNumber = 1,
+                    Created = DateTime.UtcNow,
+                    Updated = DateTime.UtcNow,
+                    Title = "Test Page",
+                    Contents = "This is a test page."
+                } };
+
+            var repositoryMock = new Mock<IRepository<Models.NotebookPage>>();
+            repositoryMock.Setup(r => r.Find(It.IsAny<Expression<Func<Models.NotebookPage, bool>>>()))
+                .Returns((Expression<Func<Models.NotebookPage, bool>> predicate) =>
+                    pages.Where(predicate.Compile()).AsQueryable());
+
+            var authHandlerMock = MockAuthorizationHandler.GetAlwaysAuthorizedMock();
+
+            var notebookPageQueryHandler = new NotebookPagesQueryHandler(
+                repositoryMock.Object,
+                authHandlerMock.Object
+            );
 
             var query = new GetNotebookPages(new User(Guid.NewGuid()), 1);
 
-            var result = await _notebookPageQueryHandler.HandleAsync(query);
+            var result = await notebookPageQueryHandler.HandleAsync(query);
+
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Count, Is.EqualTo(2));
         }
@@ -101,14 +98,78 @@ namespace MnemosyneDomain.Test.Queries.NotebookPages
         [Test]
         public async Task ShouldReturnAnEmptyListIfUserIsNotAuthorized()
         {
-            _authorizationHandler.SetIsAuthorized(false);
+            var pages = new List<Models.NotebookPage> {
+                new Models.NotebookPage
+                {
+                    NotebookPageId = Guid.NewGuid(),
+                    NotebookId = 1,
+                    PageNumber = 0,
+                    Created = DateTime.UtcNow,
+                    Updated = DateTime.UtcNow,
+                    Title = "Test Page",
+                    Contents = "This is a test page."
+                },
 
-            // Assert the pre-condition is true
-            Assert.That(_notebookPageRepository.NotebookPages.Count(p => p.NotebookId == 1), Is.EqualTo(2));
+                new Models.NotebookPage
+                {
+                    NotebookPageId = Guid.NewGuid(),
+                    NotebookId = 1,
+                    PageNumber = 1,
+                    Created = DateTime.UtcNow,
+                    Updated = DateTime.UtcNow,
+                    Title = "Test Page",
+                    Contents = "This is a test page."
+                },
+
+                new Models.NotebookPage
+                {
+                    NotebookPageId = Guid.NewGuid(),
+                    NotebookId = 2,
+                    PageNumber = 0,
+                    Created = DateTime.UtcNow,
+                    Updated = DateTime.UtcNow,
+                    Title = "Test Page",
+                    Contents = "This is a test page."
+                },
+
+                new Models.NotebookPage
+                {
+                    NotebookPageId = Guid.NewGuid(),
+                    NotebookId = 3,
+                    PageNumber = 0,
+                    Created = DateTime.UtcNow,
+                    Updated = DateTime.UtcNow,
+                    Title = "Test Page",
+                    Contents = "This is a test page."
+                },
+
+                new Models.NotebookPage
+                {
+                    NotebookPageId = Guid.NewGuid(),
+                    NotebookId = 3,
+                    PageNumber = 1,
+                    Created = DateTime.UtcNow,
+                    Updated = DateTime.UtcNow,
+                    Title = "Test Page",
+                    Contents = "This is a test page."
+                } };
+
+            var repositoryMock = new Mock<IRepository<Models.NotebookPage>>();
+            repositoryMock.Setup(r => r.Find(It.IsAny<Expression<Func<Models.NotebookPage, bool>>>()))
+                .Returns((Func<Models.NotebookPage, bool> predicate) =>
+                    pages.Where(predicate).AsQueryable());
+
+            var authHandlerMock = MockAuthorizationHandler.GetAlwaysUnauthorizedMock();
+
+            var notebookPageQueryHandler = new NotebookPagesQueryHandler(
+                repositoryMock.Object,
+                authHandlerMock.Object
+            );
 
             var query = new GetNotebookPages(new User(Guid.NewGuid()), 1);
 
-            var result = await _notebookPageQueryHandler.HandleAsync(query);
+            var result = await notebookPageQueryHandler.HandleAsync(query);
+
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Count, Is.EqualTo(0));
         }
@@ -116,14 +177,77 @@ namespace MnemosyneDomain.Test.Queries.NotebookPages
         [Test]
         public async Task ShouldReturnAnEmptyListIfNotebookIdHasNoPages()
         {
-            _authorizationHandler.SetIsAuthorized(false);
+            var pages = new List<Models.NotebookPage> {
+                new Models.NotebookPage
+                {
+                    NotebookPageId = Guid.NewGuid(),
+                    NotebookId = 1,
+                    PageNumber = 0,
+                    Created = DateTime.UtcNow,
+                    Updated = DateTime.UtcNow,
+                    Title = "Test Page",
+                    Contents = "This is a test page."
+                },
 
-            // Assert the pre-condition is true and no-one has added a page for NotebookId 5 to setup
-            Assert.That(_notebookPageRepository.NotebookPages.Count(p => p.NotebookId == 5), Is.EqualTo(0));
+                new Models.NotebookPage
+                {
+                    NotebookPageId = Guid.NewGuid(),
+                    NotebookId = 1,
+                    PageNumber = 1,
+                    Created = DateTime.UtcNow,
+                    Updated = DateTime.UtcNow,
+                    Title = "Test Page",
+                    Contents = "This is a test page."
+                },
+
+                new Models.NotebookPage
+                {
+                    NotebookPageId = Guid.NewGuid(),
+                    NotebookId = 2,
+                    PageNumber = 0,
+                    Created = DateTime.UtcNow,
+                    Updated = DateTime.UtcNow,
+                    Title = "Test Page",
+                    Contents = "This is a test page."
+                },
+
+                new Models.NotebookPage
+                {
+                    NotebookPageId = Guid.NewGuid(),
+                    NotebookId = 3,
+                    PageNumber = 0,
+                    Created = DateTime.UtcNow,
+                    Updated = DateTime.UtcNow,
+                    Title = "Test Page",
+                    Contents = "This is a test page."
+                },
+
+                new Models.NotebookPage
+                {
+                    NotebookPageId = Guid.NewGuid(),
+                    NotebookId = 3,
+                    PageNumber = 1,
+                    Created = DateTime.UtcNow,
+                    Updated = DateTime.UtcNow,
+                    Title = "Test Page",
+                    Contents = "This is a test page."
+                } };
+
+            var repositoryMock = new Mock<IRepository<Models.NotebookPage>>();
+            repositoryMock.Setup(r => r.Find(It.IsAny<Expression<Func<Models.NotebookPage, bool>>>()))
+                .Returns((Expression<Func<Models.NotebookPage, bool>> predicate) =>
+                    pages.Where(predicate.Compile()).AsQueryable());
+
+            var authHandlerMock = MockAuthorizationHandler.GetAlwaysAuthorizedMock();
+
+            var notebookPageQueryHandler = new NotebookPagesQueryHandler(
+                repositoryMock.Object,
+                authHandlerMock.Object
+            );
 
             var query = new GetNotebookPages(new User(Guid.NewGuid()), 5);
 
-            var result = await _notebookPageQueryHandler.HandleAsync(query);
+            var result = await notebookPageQueryHandler.HandleAsync(query);
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Count, Is.EqualTo(0));
         }

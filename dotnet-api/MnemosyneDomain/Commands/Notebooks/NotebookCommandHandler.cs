@@ -14,10 +14,10 @@ namespace MnemosyneDomain.Commands.Notebooks
 {
     public class NotebookCommandHandler
     {
-        private readonly INotebookRepository _repository;
+        private readonly IRepository<Notebook> _repository;
         private readonly IAuthorizationHandler _authService;
         public NotebookCommandHandler(
-            INotebookRepository _repository,
+            IRepository<Notebook> _repository,
             IAuthorizationHandler authService)
         {
             this._repository = _repository;
@@ -33,7 +33,7 @@ namespace MnemosyneDomain.Commands.Notebooks
                 UserId = request.User.UserId
             };
 
-            await _repository.AddNotebookAsync(newNotebook);
+            await _repository.AddAsync(newNotebook);
 
             return new NotebookCreated(
                 request.User,
@@ -45,9 +45,9 @@ namespace MnemosyneDomain.Commands.Notebooks
 
         public async Task HandleAsync(DeleteNotebook request)
         {
-            if (!_authService.IsAuthorized(request.User, request.NotebookId, AuthorizationPolicies.NotebookOwner)) return;
+            if (!await _authService.IsAuthorizedAsync(request.User, request.NotebookId, AuthorizationPolicies.NotebookOwner)) return;
 
-            await _repository.RemoveNotebookAsync(request.NotebookId);
+            await _repository.DeleteAsync(new Notebook { NotebookId = request.NotebookId });
         }
     }
 }

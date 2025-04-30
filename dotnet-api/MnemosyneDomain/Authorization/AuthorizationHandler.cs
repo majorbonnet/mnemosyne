@@ -2,34 +2,28 @@
 using MnemosyneDomain.Authorization.Requirements;
 using MnemosyneDomain.Commands.Notebooks;
 using MnemosyneDomain.Models;
+using MnemosyneDomain.Repositories;
 using Npgsql.Internal;
 
 namespace MnemosyneDomain.Authorization
 {
     public class AuthorizationHandler : IAuthorizationHandler
     {
-        private readonly MnemosyneContext _context;
+        private readonly IRepository<UserInfo> _repository;
+        private readonly IRepositoryFactory _repositoryFactory;
 
-        public AuthorizationHandler(MnemosyneContext context)
+        public AuthorizationHandler(
+            IRepository<UserInfo> repository,
+            IRepositoryFactory repositoryFactory)
         {
-            _context = context;
+            _repository = repository;
+            _repositoryFactory = repositoryFactory;
         }
 
         public async Task<CreateNotebook?> HandleAsync(VerifyUser request)
         {
-            UserInfo? user = _context.UserInfos.FirstOrDefault(x => x.UserId == request.UserId);
-
-            if (user is null)
-            {
-                user = new()
-                {
-                    UserId = request.UserId
-                };
-
-                _context.UserInfos.Add(user);
-
-                await _context.SaveChangesAsync();
-
+            if (await _repository.AddIfNotExistsAsync(new UserInfo { UserId = request.UserId }))
+            { 
                 return new CreateNotebook(new User(request.UserId));
             }
 
@@ -45,11 +39,12 @@ namespace MnemosyneDomain.Authorization
         /// <param name="resourceId"></param>
         /// <param name="requirements"></param>
         /// <returns></returns>
-        public bool IsAuthorized<TResource>(User user, Guid resourceId, List<IAuthorizationRequirement<TResource>> requirements) where TResource : class
+        public async Task<bool> IsAuthorizedAsync<TResource>(User user, Guid resourceId, List<IAuthorizationRequirement<TResource>> requirements) where TResource : class
         {
             if (user is null) return false;
 
-            TResource? resource = _context.Set<TResource>().Find(resourceId);
+            IRepository<TResource> repository = _repositoryFactory.CreateRepository<TResource>();
+            TResource? resource = await repository.FindOneAsync(resourceId);
 
             if (resource is null) return false;
 
@@ -73,11 +68,12 @@ namespace MnemosyneDomain.Authorization
         /// <param name="resourceId"></param>
         /// <param name="requirements"></param>
         /// <returns></returns>
-        public bool IsAuthorized<TResource>(User user, int resourceId, List<IAuthorizationRequirement<TResource>> requirements) where TResource : class
+        public async Task<bool> IsAuthorizedAsync<TResource>(User user, int resourceId, List<IAuthorizationRequirement<TResource>> requirements) where TResource : class
         {
             if (user is null) return false;
 
-            TResource? resource = _context.Set<TResource>().Find(resourceId);
+            IRepository<TResource> repository = _repositoryFactory.CreateRepository<TResource>();
+            TResource? resource = await repository.FindOneAsync(resourceId);
 
             if (resource is null) return false;
 
@@ -101,19 +97,19 @@ namespace MnemosyneDomain.Authorization
         /// <param name="resource"></param>
         /// <param name="requirements"></param>
         /// <returns></returns>
-        public bool IsAuthorized<TResource>(User user, TResource resource, List<IAuthorizationRequirement<TResource>> requirements) where TResource : class
+        public Task<bool> IsAuthorizedAsync<TResource>(User user, TResource resource, List<IAuthorizationRequirement<TResource>> requirements) where TResource : class
         {
-            if (user is null) return false;
+            if (user is null) return Task.FromResult(false);
 
             foreach (var requirement in requirements)
             {
                 if (!requirement.IsMet(user, resource))
                 {
-                    return false;
+                    return Task.FromResult(false);
                 }
             }
 
-            return true;
+            return Task.FromResult(true);
         }
     }
 }

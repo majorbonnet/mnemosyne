@@ -1,40 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 using MnemosyneDomain.Authorization;
+using MnemosyneDomain.Authorization.Requirements;
 using MnemosyneDomain.Commands.Notebooks;
 using MnemosyneDomain.Repositories;
-using MnemosyneDomain.Test.Fakes;
+using MnemosyneDomain.Test.Utilities;
+using Moq;
 
 namespace MnemosyneDomain.Test.Commands.Notebooks
 {
     public class CreateNotebookHandler
     {
-        private FakeNotebookRepository _notebookRepository;
-        private FakeAuthorizationHandler _authorizationHandler;
-        private NotebookCommandHandler _handler;
-
         [SetUp]
         public void Setup()
         {
-            _notebookRepository = new FakeNotebookRepository();
-            _authorizationHandler = new FakeAuthorizationHandler();
-
-            _handler = new NotebookCommandHandler(
-                _notebookRepository,
-                _authorizationHandler
-            );
         }
 
         [Test]
         public async Task ShouldReturnAValidNotebookCreatedEvent()
         {
-            _authorizationHandler.SetIsAuthorized(true);
+            var authHandlerMock = MockAuthorizationHandler.GetAlwaysAuthorizedMock();
+            var repositoryMock = new Mock<IRepository<Models.Notebook>>();
+
+            repositoryMock.Setup(r => r.AddAsync(It.IsAny<Models.Notebook>()))
+                .Callback<Models.Notebook>(notebook =>
+                {
+                    notebook.NotebookId = new Random().Next(1, 1000); // Simulate ID generation
+                });
+
+            var handler = new NotebookCommandHandler(
+                repositoryMock.Object,
+                authHandlerMock.Object
+            );
+
             var command = new CreateNotebook(new User(Guid.NewGuid()));
 
-            var result = await _handler.HandleAsync(command);
+            var result = await handler.HandleAsync(command);
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.User.UserId, Is.EqualTo(command.User.UserId));
@@ -44,16 +49,28 @@ namespace MnemosyneDomain.Test.Commands.Notebooks
         [Test]
         public async Task ShouldAddANotebookToTheRepository()
         {
-            // pre-condition: no notebooks in the repository
-            Assert.That(_notebookRepository.Notebooks.Count, Is.EqualTo(0));
+            var authHandlerMock = MockAuthorizationHandler.GetAlwaysAuthorizedMock();
+            var repositoryMock = new Mock<IRepository<Models.Notebook>>();
 
-            _authorizationHandler.SetIsAuthorized(true);
+            repositoryMock.Setup(r => r.AddAsync(It.IsAny<Models.Notebook>()))
+                .Callback<Models.Notebook>(notebook =>
+                {
+                    notebook.NotebookId = new Random().Next(1, 1000); // Simulate ID generation
+                });
+
+            var handler = new NotebookCommandHandler(
+                repositoryMock.Object,
+                authHandlerMock.Object
+            );
+
             var command = new CreateNotebook(new User(Guid.NewGuid()));
 
-            var result = await _handler.HandleAsync(command);
+            var result = await handler.HandleAsync(command);
             Assert.That(result, Is.Not.Null);
-            Assert.That( _notebookRepository.Notebooks.Count, Is.Not.EqualTo(0));
-            Assert.That(_notebookRepository.Notebooks.First().NotebookId, Is.EqualTo(result.NotebookId));
+            repositoryMock.Verify(r => r.AddAsync(It.Is<Models.Notebook>(n =>
+                n.UserId == command.User.UserId &&
+                n.NotebookId == result.NotebookId
+            )), Times.Once);
         }
     }
 }

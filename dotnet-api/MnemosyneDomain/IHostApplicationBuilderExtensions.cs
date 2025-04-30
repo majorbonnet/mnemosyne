@@ -7,6 +7,7 @@ using MnemosyneDomain.Commands.NotebookPages;
 using MnemosyneDomain.Commands.Notebooks;
 using MnemosyneDomain.Queries.NotebookPages;
 using MnemosyneDomain.Queries.Notebooks;
+using MnemosyneDomain.Repositories;
 
 namespace MnemosyneDomain
 {
@@ -19,10 +20,8 @@ namespace MnemosyneDomain
                 opts.UseNpgsql(appBuilder.Configuration.GetConnectionString("DefaultConnection"));
             });
 
-            //appBuilder.Services.AddScoped<NotebookQueryHandler>();
-            //appBuilder.Services.AddScoped<NotebookCommandHandler>();
-            //appBuilder.Services.AddScoped<NotebookPageCommandHandler>();
-            //appBuilder.Services.AddScoped<NotebookPagesQueryHandler>();
+            appBuilder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            appBuilder.Services.AddScoped<IRepositoryFactory, RepositoryFactory>();
             appBuilder.Services.AddScoped<AuthorizationHandler>();
         }
     }

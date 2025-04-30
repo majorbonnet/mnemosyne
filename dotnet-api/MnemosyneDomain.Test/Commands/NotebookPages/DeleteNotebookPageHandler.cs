@@ -4,79 +4,62 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MnemosyneDomain.Authorization;
+using MnemosyneDomain.Authorization.Requirements;
 using MnemosyneDomain.Commands.NotebookPages;
 using MnemosyneDomain.Repositories;
-using MnemosyneDomain.Test.Fakes;
+using MnemosyneDomain.Test.Utilities;
+using Moq;
+
 
 namespace MnemosyneDomain.Test.Commands.NotebookPages
 {
     public class DeleteNotebookPageHandler
     {
-        private FakeAuthorizationHandler _authorizationHandler;
-        private FakeNotebookPageRepository _notebookPageRepository;
-        private NotebookPageCommandHandler _notebookPageCommandHandler;
 
         [SetUp]
-        public async Task Setup()
+        public void Setup()
         {
-            _authorizationHandler = new FakeAuthorizationHandler();
-            _notebookPageRepository = new FakeNotebookPageRepository();
-            _notebookPageCommandHandler = new NotebookPageCommandHandler(
-                _notebookPageRepository,
-                _authorizationHandler
-            );
 
-            await _notebookPageRepository.AddPageAsync(new Models.NotebookPage
-            {
-                NotebookPageId = Guid.NewGuid(),
-                NotebookId = 1,
-                PageNumber = 0,
-                Created = DateTime.UtcNow,
-                Updated = DateTime.UtcNow,
-                Title = "Test Page",
-                Contents = "This is a test page."
-            });
-
-            await _notebookPageRepository.AddPageAsync(new Models.NotebookPage
-            {
-                NotebookPageId = Guid.NewGuid(),
-                NotebookId = 1,
-                PageNumber = 1,
-                Created = DateTime.UtcNow,
-                Updated = DateTime.UtcNow,
-                Title = "Test Page",
-                Contents = "This is a test page."
-            });
         }
 
         [Test]
         public async Task ShouldRemoveNotebookPageFromRepository()
         {
-            // pre-condition: select a page and assert that it exists in the repository
-            Guid pageId = _notebookPageRepository.NotebookPages.First().NotebookPageId;
-            Assert.That(await _notebookPageRepository.GetPageByIdAsync(pageId), Is.Not.Null);
+            var authHandlerMock = MockAuthorizationHandler.GetAlwaysAuthorizedMock();
 
-            _authorizationHandler.SetIsAuthorized(true);
-            var command = new DeleteNotebookPage(new User(Guid.NewGuid()), 1, pageId);
+            var repositoryMock = new Mock<IRepository<Models.NotebookPage>>();
+            repositoryMock.Setup(r => r.DeleteAsync(It.IsAny<Models.NotebookPage>()));
 
-            await _notebookPageCommandHandler.HandleAsync(command);
+            var notebookPageCommandHandler = new NotebookPageCommandHandler(
+                repositoryMock.Object,
+                authHandlerMock.Object
+            );
 
-            Assert.That(await _notebookPageRepository.GetPageByIdAsync(command.NotebookPageId), Is.Null);
+            var command = new DeleteNotebookPage(new User(Guid.NewGuid()), 1, Guid.NewGuid());
+
+            await notebookPageCommandHandler.HandleAsync(command);
+
+            repositoryMock.Verify(r => r.DeleteAsync(It.IsAny<Models.NotebookPage>()), Times.Once);
         }
 
         [Test]
         public async Task ShouldDoNothingIfUserIsNotAuthorized()
         {
-            // pre-condition: select a page and assert that it exists in the repository
-            Guid pageId = _notebookPageRepository.NotebookPages.First().NotebookPageId;
-            Assert.That(await _notebookPageRepository.GetPageByIdAsync(pageId), Is.Not.Null);
+            var authHandlerMock = MockAuthorizationHandler.GetAlwaysUnauthorizedMock();
 
-            _authorizationHandler.SetIsAuthorized(false);
-            var command = new DeleteNotebookPage(new User(Guid.NewGuid()), 1, pageId);
+            var repositoryMock = new Mock<IRepository<Models.NotebookPage>>();
+            repositoryMock.Setup(r => r.DeleteAsync(It.IsAny<Models.NotebookPage>()));
 
-            await _notebookPageCommandHandler.HandleAsync(command);
+            var notebookPageCommandHandler = new NotebookPageCommandHandler(
+                repositoryMock.Object,
+                authHandlerMock.Object
+            );
 
-            Assert.That(await _notebookPageRepository.GetPageByIdAsync(command.NotebookPageId), Is.Not.Null);
+            var command = new DeleteNotebookPage(new User(Guid.NewGuid()), 1, Guid.NewGuid());
+
+            await notebookPageCommandHandler.HandleAsync(command);
+
+            repositoryMock.Verify(r => r.DeleteAsync(It.IsAny<Models.NotebookPage>()), Times.Never);
         }
     }
 }

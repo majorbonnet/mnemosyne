@@ -11,16 +11,16 @@ namespace MnemosyneDomain.Queries.Notebooks
 {
     public class NotebookQueryHandler
     {
-        private readonly INotebookRepository _repository;
+        private readonly IRepository<Models.Notebook> _repository;
 
-        public NotebookQueryHandler(INotebookRepository repository)
+        public NotebookQueryHandler(IRepository<Models.Notebook> repository)
         {
             _repository = repository;
         }
 
-        public async Task<List<Notebook>> HandleAsync(GetNotebooks request)
+        public List<Notebook> Handle(GetNotebooks request)
         {
-            List<Notebook> notebooks = (await _repository.GetNotebooksByUserIdAsync(request.User.UserId))
+            List<Notebook> notebooks = _repository.Find(n => n.UserId == request.User.UserId)
                 .Select(x => new Notebook(
                     x.NotebookId,
                     x.Created,
