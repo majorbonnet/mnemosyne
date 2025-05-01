@@ -22,16 +22,18 @@ namespace MnemosyneDomain.Test.Commands.Notebooks
         [Fact]
         public async Task ShouldCreateANotebook()
         {
+            await _fixture.ResetDb();
             // Arrange
-            var context = await _fixture.CreateContext();
+            var context = _fixture.CreateContext();
 
             var authService = FakeAuthorizationHandler.CreateAuthorized();
-            var commandHandler = new NotebookCommandHandler(context, authService);
+            var commandHandler = new NotebookCommandHandler(_fixture.CreateContext(), authService);
 
             Guid userId = Guid.NewGuid();
 
             // user needs to exist in db
             context.UserInfos.Add(new Models.UserInfo { UserId = userId });
+            await context.SaveChangesAsync();
 
             // Act
             var result = await commandHandler.HandleAsync(new CreateNotebook(new Authorization.User(userId)));

@@ -5,6 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using MnemosyneDomain.Authorization;
+using MnemosyneDomain.Commands.Notebooks;
+using MnemosyneDomain.Events;
+using Wolverine;
 
 namespace MnemosyneDomain.Queries.Notebooks
 {
@@ -17,9 +20,9 @@ namespace MnemosyneDomain.Queries.Notebooks
             _context = context;
         }
 
-        public List<Notebook> Handle(GetNotebooks request)
+        public async Task<List<Notebook>> HandleAsync(GetNotebooks request)
         {
-            List<Notebook> notebooks = _context.Notebooks
+            List<Notebook> notebooks = await _context.Notebooks
                 .Where(n => n.UserId == request.User.UserId)
                 .Select(x => new Notebook(
                     x.NotebookId,
@@ -27,7 +30,7 @@ namespace MnemosyneDomain.Queries.Notebooks
                     x.Updated,
                     x.Title
                 ))
-                .ToList();
+                .ToListAsync();
 
             return notebooks;
         }

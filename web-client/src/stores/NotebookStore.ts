@@ -15,16 +15,14 @@ export const useNotebookStore = defineStore("notebookStore", () => {
         const response = await MnemosyneApi.get<Notebook[]>("notebooks");
         notebooks.value = response.data;
 
-        await selectNotebook(notebooks.value[0]);
+        if (notebooks.value.length > 0) {
+            await selectNotebook(notebooks.value[0]);
+        }
     }
 
     async function addNotebook() {
         const response = await MnemosyneApi.post<Notebook>("notebooks");
         notebooks.value.push(response.data)
-
-        if (notebooks.value.length > 0) {
-            selectedNotebook.value = notebooks.value[0];
-        }
     }
 
     async function selectNotebook(notebook: Notebook) {
@@ -34,8 +32,10 @@ export const useNotebookStore = defineStore("notebookStore", () => {
         selectedPage.value = notebook.pages[0];
     }
 
-    watch(() => selectedPage.value.contents, debounce(async () => {
-        await MnemosyneApi.post(`notebooks/${selectedNotebook.value.notebookId}/${selectedPage.value.notebookPageId}`, { "title": null, "contents": selectedPage.value.contents });
+    watch(() => selectedPage.value?.contents, debounce(async () => {
+        if (selectedPage.value) {
+            await MnemosyneApi.post(`notebooks/${selectedNotebook.value.notebookId}/${selectedPage.value.notebookPageId}`, { "title": null, "contents": selectedPage.value.contents });
+        }
     }, 500));
 
 

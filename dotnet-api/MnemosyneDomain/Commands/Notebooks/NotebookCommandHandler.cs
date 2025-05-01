@@ -6,8 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using MnemosyneDomain.Authorization;
+using MnemosyneDomain.Commands.NotebookPages;
 using MnemosyneDomain.Events;
 using MnemosyneDomain.Models;
+using Wolverine;
 
 namespace MnemosyneDomain.Commands.Notebooks
 {
@@ -46,11 +48,7 @@ namespace MnemosyneDomain.Commands.Notebooks
         {
             if (!await _authService.IsAuthorizedAsync(request.User, request.NotebookId, AuthorizationPolicies.NotebookOwner)) return;
 
-            var notebook = await _context.Notebooks.FirstOrDefaultAsync(n => n.NotebookId == request.NotebookId);
-
-            if (notebook is null) return;  
-
-            _context.Notebooks.Remove(notebook);
+            _context.Notebooks.Remove(new Notebook { NotebookId = request.NotebookId });
             await _context.SaveChangesAsync();
         }
     }

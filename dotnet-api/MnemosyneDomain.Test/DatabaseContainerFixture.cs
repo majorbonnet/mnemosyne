@@ -17,7 +17,9 @@ namespace MnemosyneDomain.Test
 
         public PostgreSqlContainer Container => _postgres;
 
-        public async Task<MnemosyneContext> CreateContext()
+
+
+        public async Task ResetDb()
         {
             var dbContextOptions = new DbContextOptionsBuilder<MnemosyneContext>()
                 .UseNpgsql(_postgres.GetConnectionString())
@@ -27,6 +29,15 @@ namespace MnemosyneDomain.Test
 
             await context.Database.EnsureDeletedAsync();
             await context.Database.EnsureCreatedAsync();
+        }
+
+        public MnemosyneContext CreateContext()
+        {
+            var dbContextOptions = new DbContextOptionsBuilder<MnemosyneContext>()
+                .UseNpgsql(_postgres.GetConnectionString())
+                .Options;
+
+            var context = new MnemosyneContext(dbContextOptions);
 
             return context;
         }

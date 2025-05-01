@@ -1,3 +1,4 @@
+using System.Net.WebSockets;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using MnemosyneApi.Middleware;
 using MnemosyneDomain;
