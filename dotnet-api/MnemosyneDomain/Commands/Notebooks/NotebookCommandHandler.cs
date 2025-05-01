@@ -8,19 +8,17 @@ using Microsoft.EntityFrameworkCore;
 using MnemosyneDomain.Authorization;
 using MnemosyneDomain.Events;
 using MnemosyneDomain.Models;
-using MnemosyneDomain.Repositories;
 
 namespace MnemosyneDomain.Commands.Notebooks
 {
     public class NotebookCommandHandler
     {
-        private readonly IRepository<Notebook> _repository;
+        private readonly MnemosyneContext _context;
         private readonly IAuthorizationHandler _authService;
-        public NotebookCommandHandler(
-            IRepository<Notebook> _repository,
-            IAuthorizationHandler authService)
+
+        public NotebookCommandHandler(MnemosyneContext context, IAuthorizationHandler authService)
         {
-            this._repository = _repository;
+            _context = context;
             _authService = authService;
         }
 
@@ -33,7 +31,8 @@ namespace MnemosyneDomain.Commands.Notebooks
                 UserId = request.User.UserId
             };
 
-            await _repository.AddAsync(newNotebook);
+            _context.Notebooks.Add(newNotebook);
+            await _context.SaveChangesAsync();
 
             return new NotebookCreated(
                 request.User,
@@ -47,7 +46,12 @@ namespace MnemosyneDomain.Commands.Notebooks
         {
             if (!await _authService.IsAuthorizedAsync(request.User, request.NotebookId, AuthorizationPolicies.NotebookOwner)) return;
 
-            await _repository.DeleteAsync(new Notebook { NotebookId = request.NotebookId });
+            var notebook = await _context.Notebooks.FirstOrDefaultAsync(n => n.NotebookId == request.NotebookId);
+
+            if (notebook is null) return;  
+
+            _context.Notebooks.Remove(notebook);
+            await _context.SaveChangesAsync();
         }
     }
 }

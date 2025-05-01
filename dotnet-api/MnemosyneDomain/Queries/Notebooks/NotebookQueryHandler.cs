@@ -5,22 +5,22 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using MnemosyneDomain.Authorization;
-using MnemosyneDomain.Repositories;
 
 namespace MnemosyneDomain.Queries.Notebooks
 {
     public class NotebookQueryHandler
     {
-        private readonly IRepository<Models.Notebook> _repository;
+        private readonly MnemosyneContext _context;
 
-        public NotebookQueryHandler(IRepository<Models.Notebook> repository)
+        public NotebookQueryHandler(MnemosyneContext context)
         {
-            _repository = repository;
+            _context = context;
         }
 
         public List<Notebook> Handle(GetNotebooks request)
         {
-            List<Notebook> notebooks = _repository.Find(n => n.UserId == request.User.UserId)
+            List<Notebook> notebooks = _context.Notebooks
+                .Where(n => n.UserId == request.User.UserId)
                 .Select(x => new Notebook(
                     x.NotebookId,
                     x.Created,

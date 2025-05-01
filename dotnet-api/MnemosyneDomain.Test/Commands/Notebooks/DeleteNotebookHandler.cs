@@ -3,63 +3,85 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MnemosyneDomain.Authorization;
-using MnemosyneDomain.Authorization.Requirements;
+using Microsoft.EntityFrameworkCore;
 using MnemosyneDomain.Commands.Notebooks;
-using MnemosyneDomain.Repositories;
-using MnemosyneDomain.Test.Utilities;
-using Moq;
+using Testcontainers.PostgreSql;
 
 namespace MnemosyneDomain.Test.Commands.Notebooks
 {
-    public class DeleteNotebookHandler
+    public class DeleteNotebookHandler : IClassFixture<DatabaseContainerFixture>
     {
-        [SetUp]
-        public void Setup()
+        private readonly DatabaseContainerFixture _fixture;
+        public DeleteNotebookHandler(DatabaseContainerFixture fixture)
         {
-
+            _fixture = fixture;
         }
 
-        [Test]
-        public async Task ShouldRemoveANotebookFromTheRepository()
+        [Fact]
+        public async Task ShouldDeleteANotebook()
         {
-            var repositoryMock = new Mock<IRepository<Models.Notebook>>();
-            repositoryMock.Setup(r => r.DeleteAsync(It.IsAny<Models.Notebook>()))
-                .Returns(Task.CompletedTask);
+            // Arrange
+            var context = await _fixture.CreateContext();
 
-            var authHandlerMock = MockAuthorizationHandler.GetAlwaysAuthorizedMock();
+            var authService = FakeAuthorizationHandler.CreateAuthorized();
+            var commandHandler = new NotebookCommandHandler(context, authService);
 
-            var handler = new NotebookCommandHandler(
-                repositoryMock.Object,
-                authHandlerMock.Object
-            );
+            Guid userId = Guid.NewGuid();
 
-            var command = new DeleteNotebook(new User(Guid.NewGuid()), 1);
+            context.UserInfos.Add(new Models.UserInfo { UserId = userId });
 
-            await handler.HandleAsync(command);
+            var notebook = new Models.Notebook
+            {
+                NotebookId = 0,
+                UserId = userId,
+                Created = DateTime.UtcNow,
+                Updated = DateTime.UtcNow
+            };
 
-            repositoryMock.Verify(r => r.DeleteAsync(It.Is<Models.Notebook>(n => n.NotebookId == 1)), Times.Once);
+            context.Notebooks.Add(notebook);
+            await context.SaveChangesAsync();
+
+            Assert.Equal(1, context.Notebooks.Count());
+
+            // Act
+            await commandHandler.HandleAsync(new DeleteNotebook(new Authorization.User(userId), notebook.NotebookId));
+
+            // Assert
+            Assert.Equal(0, context.Notebooks.Count());
+ 
         }
 
-        [Test]
-        public async Task ShouldDoNothingIfUserIsNotAuthorized()
+        [Fact]
+        public async Task ShouldDoNothingIfUserIsUnauthorized()
         {
-            var repositoryMock = new Mock<IRepository<Models.Notebook>>();
-            repositoryMock.Setup(r => r.DeleteAsync(It.IsAny<Models.Notebook>()))
-                .Returns(Task.CompletedTask);
+            // Arrange
+            var context = await _fixture.CreateContext();
 
-            var authHandlerMock = MockAuthorizationHandler.GetAlwaysUnauthorizedMock();
+            var authService = FakeAuthorizationHandler.CreateUnauthorized();
+            var commandHandler = new NotebookCommandHandler(context, authService);
 
-            var handler = new NotebookCommandHandler(
-                repositoryMock.Object,
-                authHandlerMock.Object
-            );
+            Guid userId = Guid.NewGuid();
 
-            var command = new DeleteNotebook(new User(Guid.NewGuid()), 1);
+            context.UserInfos.Add(new Models.UserInfo { UserId = userId });
 
-            await handler.HandleAsync(command);
+            var notebook = new Models.Notebook
+            {
+                NotebookId = 0,
+                UserId = userId,
+                Created = DateTime.UtcNow,
+                Updated = DateTime.UtcNow
+            };
 
-            repositoryMock.Verify(r => r.DeleteAsync(It.IsAny<Models.Notebook>()), Times.Never);
+            context.Notebooks.Add(notebook);
+            await context.SaveChangesAsync();
+
+            Assert.Equal(1, context.Notebooks.Count());
+
+            // Act
+            await commandHandler.HandleAsync(new DeleteNotebook(new Authorization.User(userId), notebook.NotebookId));
+
+            // Assert
+            Assert.Equal(1, context.Notebooks.Count());
         }
     }
 }

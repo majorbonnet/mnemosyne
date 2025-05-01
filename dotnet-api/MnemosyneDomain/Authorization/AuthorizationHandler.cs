@@ -2,28 +2,25 @@
 using MnemosyneDomain.Authorization.Requirements;
 using MnemosyneDomain.Commands.Notebooks;
 using MnemosyneDomain.Models;
-using MnemosyneDomain.Repositories;
-using Npgsql.Internal;
 
 namespace MnemosyneDomain.Authorization
 {
     public class AuthorizationHandler : IAuthorizationHandler
     {
-        private readonly IRepository<UserInfo> _repository;
-        private readonly IRepositoryFactory _repositoryFactory;
+        private readonly MnemosyneContext _context;
 
-        public AuthorizationHandler(
-            IRepository<UserInfo> repository,
-            IRepositoryFactory repositoryFactory)
+        public AuthorizationHandler(MnemosyneContext context)
         {
-            _repository = repository;
-            _repositoryFactory = repositoryFactory;
+            _context = context;
         }
 
         public async Task<CreateNotebook?> HandleAsync(VerifyUser request)
         {
-            if (await _repository.AddIfNotExistsAsync(new UserInfo { UserId = request.UserId }))
-            { 
+            if (!await _context.UserInfos.AnyAsync(u => u.UserId == request.UserId))
+            {
+                _context.UserInfos.Add(new UserInfo { UserId = request.UserId });
+                await _context.SaveChangesAsync();
+
                 return new CreateNotebook(new User(request.UserId));
             }
 
@@ -43,8 +40,7 @@ namespace MnemosyneDomain.Authorization
         {
             if (user is null) return false;
 
-            IRepository<TResource> repository = _repositoryFactory.CreateRepository<TResource>();
-            TResource? resource = await repository.FindOneAsync(resourceId);
+            TResource? resource = await _context.Set<TResource>().FindAsync(resourceId);
 
             if (resource is null) return false;
 
@@ -72,8 +68,7 @@ namespace MnemosyneDomain.Authorization
         {
             if (user is null) return false;
 
-            IRepository<TResource> repository = _repositoryFactory.CreateRepository<TResource>();
-            TResource? resource = await repository.FindOneAsync(resourceId);
+            TResource? resource = await _context.Set<TResource>().FindAsync(resourceId);
 
             if (resource is null) return false;
 

@@ -1,76 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
-using MnemosyneDomain.Authorization;
-using MnemosyneDomain.Authorization.Requirements;
+using Microsoft.EntityFrameworkCore;
 using MnemosyneDomain.Commands.Notebooks;
-using MnemosyneDomain.Repositories;
-using MnemosyneDomain.Test.Utilities;
-using Moq;
+using Testcontainers.PostgreSql;
 
 namespace MnemosyneDomain.Test.Commands.Notebooks
 {
-    public class CreateNotebookHandler
+
+    public class CreateNotebookHandler : IClassFixture<DatabaseContainerFixture>
     {
-        [SetUp]
-        public void Setup()
+        private readonly DatabaseContainerFixture _fixture;
+
+        public CreateNotebookHandler(DatabaseContainerFixture fixture)
         {
+            _fixture = fixture;
         }
 
-        [Test]
-        public async Task ShouldReturnAValidNotebookCreatedEvent()
+        [Fact]
+        public async Task ShouldCreateANotebook()
         {
-            var authHandlerMock = MockAuthorizationHandler.GetAlwaysAuthorizedMock();
-            var repositoryMock = new Mock<IRepository<Models.Notebook>>();
+            // Arrange
+            var context = await _fixture.CreateContext();
 
-            repositoryMock.Setup(r => r.AddAsync(It.IsAny<Models.Notebook>()))
-                .Callback<Models.Notebook>(notebook =>
-                {
-                    notebook.NotebookId = new Random().Next(1, 1000); // Simulate ID generation
-                });
+            var authService = FakeAuthorizationHandler.CreateAuthorized();
+            var commandHandler = new NotebookCommandHandler(context, authService);
 
-            var handler = new NotebookCommandHandler(
-                repositoryMock.Object,
-                authHandlerMock.Object
-            );
+            Guid userId = Guid.NewGuid();
 
-            var command = new CreateNotebook(new User(Guid.NewGuid()));
+            // user needs to exist in db
+            context.UserInfos.Add(new Models.UserInfo { UserId = userId });
 
-            var result = await handler.HandleAsync(command);
+            // Act
+            var result = await commandHandler.HandleAsync(new CreateNotebook(new Authorization.User(userId)));
 
-            Assert.That(result, Is.Not.Null);
-            Assert.That(result.User.UserId, Is.EqualTo(command.User.UserId));
-            Assert.That(result.NotebookId, Is.Not.EqualTo(0));
-        }
-
-        [Test]
-        public async Task ShouldAddANotebookToTheRepository()
-        {
-            var authHandlerMock = MockAuthorizationHandler.GetAlwaysAuthorizedMock();
-            var repositoryMock = new Mock<IRepository<Models.Notebook>>();
-
-            repositoryMock.Setup(r => r.AddAsync(It.IsAny<Models.Notebook>()))
-                .Callback<Models.Notebook>(notebook =>
-                {
-                    notebook.NotebookId = new Random().Next(1, 1000); // Simulate ID generation
-                });
-
-            var handler = new NotebookCommandHandler(
-                repositoryMock.Object,
-                authHandlerMock.Object
-            );
-
-            var command = new CreateNotebook(new User(Guid.NewGuid()));
-
-            var result = await handler.HandleAsync(command);
-            Assert.That(result, Is.Not.Null);
-            repositoryMock.Verify(r => r.AddAsync(It.Is<Models.Notebook>(n =>
-                n.UserId == command.User.UserId &&
-                n.NotebookId == result.NotebookId
-            )), Times.Once);
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(userId, result.User.UserId);
+            Assert.NotEqual(0, result.NotebookId);
+            Assert.True(result.Created < DateTime.UtcNow);
+            Assert.True(result.Updated < DateTime.UtcNow);
         }
     }
 }
