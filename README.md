@@ -11,3 +11,9 @@ Current stack is:
 - Keycloak
 - Vue (+ Vite)
 - Tailwind
+
+Todos:
+ - [ ] Switch notebooks to use UUIDs
+ - [ ] Switch the notebook saving to use the SignalR hub
+ - [ ] Add pushing notebook changes up to clients if they are not the originating client
+ - [ ] Fix up the UI to something usable for switching notebooks
