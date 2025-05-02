@@ -18,87 +18,6 @@ namespace MnemosyneDomain.Test.Authorization
         }
 
         [Fact]
-        public async Task ShouldAuthorizeValidUserAndResource_Int()
-        {
-            await _fixture.ResetDb();
-            var context = _fixture.CreateContext();
-
-            // Arrange
-            Guid userId = Guid.NewGuid();
-            var user = new User(userId);
-            context.UserInfos.Add(new UserInfo { UserId = userId });
-
-            var notebook = new Notebook
-            {
-                UserId = userId,
-                Created = DateTime.UtcNow,
-                Updated = DateTime.UtcNow
-            };
-
-            context.Notebooks.Add(notebook);
-            await context.SaveChangesAsync();
-
-            var handler = new MnemosyneDomain.Authorization.AuthorizationHandler(context);
-
-            // Act
-            var isAuthorized = await handler.IsAuthorizedAsync(user, notebook.NotebookId, AuthorizationPolicies.NotebookOwner);
-
-            // Assert
-            Assert.True(isAuthorized);
-        }
-
-        [Fact]
-        public async Task ShouldNotAuthorizeInvalidUser_Int()
-        {
-            await _fixture.ResetDb();
-            var context = _fixture.CreateContext();
-
-            // Arrange
-            Guid userId = Guid.NewGuid();
-            var user = new User(userId);
-            context.UserInfos.Add(new UserInfo { UserId = userId });
-
-            var notebook = new Notebook
-            {
-                UserId = userId,
-                Created = DateTime.UtcNow,
-                Updated = DateTime.UtcNow
-            };
-
-            context.Notebooks.Add(notebook);
-            await context.SaveChangesAsync();
-
-            var handler = new MnemosyneDomain.Authorization.AuthorizationHandler(context);
-
-            // Act
-            var isAuthorized = await handler.IsAuthorizedAsync(new User(Guid.NewGuid()), notebook.NotebookId, AuthorizationPolicies.NotebookOwner);
-
-            // Assert
-            Assert.False(isAuthorized);
-        }
-
-        [Fact]
-        public async Task ShouldNotAuthorizeNonExistentResource_Int()
-        {
-            await _fixture.ResetDb();
-            var context = _fixture.CreateContext();
-
-            // Arrange
-            Guid userId = Guid.NewGuid();
-            var user = new User(userId);
-            context.UserInfos.Add(new UserInfo { UserId = userId });
-            await context.SaveChangesAsync();
-
-            var handler = new MnemosyneDomain.Authorization.AuthorizationHandler(context);
-
-            // Act
-            var isAuthorized = await handler.IsAuthorizedAsync(user, -99, AuthorizationPolicies.NotebookOwner);
-
-            // Assert
-            Assert.False(isAuthorized);
-        }
-
-        [Fact]
         public async Task ShouldAuthorizeValidUserAndResource_Guid()
         {
             await _fixture.ResetDb();
@@ -118,7 +37,7 @@ namespace MnemosyneDomain.Test.Authorization
 
             context.Notebooks.Add(notebook);
 
-            var notebookPage = new NotebookPage
+            var page = new Page
             {
                 Notebook = notebook,
                 Created = DateTime.UtcNow,
@@ -128,14 +47,14 @@ namespace MnemosyneDomain.Test.Authorization
                 Contents = "Test Content"
             };
 
-            context.NotebookPages.Add(notebookPage);
+            context.Pages.Add(page);
             await context.SaveChangesAsync();
 
             var handler = new MnemosyneDomain.Authorization.AuthorizationHandler(context);
 
 
             // Act
-            var isAuthorized = await handler.IsAuthorizedAsync(user, notebookPage.NotebookPageId, AuthorizationPolicies.NotebookPageOwner);
+            var isAuthorized = await handler.IsAuthorizedAsync(user, page.PageId, AuthorizationPolicies.PageOwner);
 
             // Assert
             Assert.True(isAuthorized);
@@ -161,7 +80,7 @@ namespace MnemosyneDomain.Test.Authorization
 
             context.Notebooks.Add(notebook);
 
-            var notebookPage = new NotebookPage
+            var page = new Page
             {
                 Notebook = notebook,
                 Created = DateTime.UtcNow,
@@ -171,13 +90,13 @@ namespace MnemosyneDomain.Test.Authorization
                 Contents = "Test Content"
             };
 
-            context.NotebookPages.Add(notebookPage);
+            context.Pages.Add(page);
             await context.SaveChangesAsync();
 
             var handler = new MnemosyneDomain.Authorization.AuthorizationHandler(context);
 
             // Act
-            var isAuthorized = await handler.IsAuthorizedAsync(new User(Guid.NewGuid()), notebookPage.NotebookPageId, AuthorizationPolicies.NotebookPageOwner);
+            var isAuthorized = await handler.IsAuthorizedAsync(new User(Guid.NewGuid()), page.PageId, AuthorizationPolicies.PageOwner);
 
             // Assert
             Assert.False(isAuthorized);
@@ -203,7 +122,7 @@ namespace MnemosyneDomain.Test.Authorization
 
             context.Notebooks.Add(notebook);
 
-            var notebookPage = new NotebookPage
+            var page = new Page
             {
                 Notebook = notebook,
                 Created = DateTime.UtcNow,
@@ -213,14 +132,14 @@ namespace MnemosyneDomain.Test.Authorization
                 Contents = "Test Content"
             };
 
-            context.NotebookPages.Add(notebookPage);
+            context.Pages.Add(page);
 
             await context.SaveChangesAsync();
 
             var handler = new MnemosyneDomain.Authorization.AuthorizationHandler(context);
 
             // Act
-            var isAuthorized = await handler.IsAuthorizedAsync(user, Guid.NewGuid(), AuthorizationPolicies.NotebookPageOwner);
+            var isAuthorized = await handler.IsAuthorizedAsync(user, Guid.NewGuid(), AuthorizationPolicies.PageOwner);
 
             // Assert
             Assert.False(isAuthorized);

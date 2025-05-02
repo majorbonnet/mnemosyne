@@ -41,7 +41,7 @@ namespace MnemosyneDomain.Test.Commands.Notebooks
             // Assert
             Assert.NotNull(result);
             Assert.Equal(userId, result.User.UserId);
-            Assert.NotEqual(0, result.NotebookId);
+            Assert.NotEqual(Guid.Empty, result.NotebookId);
             Assert.True(result.Created < DateTime.UtcNow);
             Assert.True(result.Updated < DateTime.UtcNow);
         }

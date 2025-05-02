@@ -16,10 +16,10 @@ namespace MnemosyneDomain.Authorization
         };
 
         // this was added initially to be able to test the IsAuthorized method using a Guid, in practice ownership check will probably always be done at notebook level
-        // if I add sharing, may add a NotebookPage whitelist of some kind
-        public static List<IAuthorizationRequirement<NotebookPage>> NotebookPageOwner = new List<IAuthorizationRequirement<NotebookPage>>
+        // if I add sharing, may add a Page whitelist of some kind
+        public static List<IAuthorizationRequirement<Page>> PageOwner = new List<IAuthorizationRequirement<Page>>
         {
-            new NotebookPageOwnerRequirement()
+            new PageOwnerRequirement()
         };
     }
 }

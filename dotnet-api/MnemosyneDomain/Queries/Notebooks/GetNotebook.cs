@@ -7,9 +7,9 @@ using MnemosyneDomain.Authorization;
 
 namespace MnemosyneDomain.Queries.Notebooks
 {
-    public class GetNotebook(User user, int notebookId) : BaseRequest
+    public class GetNotebook(User user, Guid notebookId) : BaseRequest
     {
         public User User => user;
-        public int NotebookId => notebookId;
+        public Guid NotebookId => notebookId;
     }
 }

@@ -1,29 +1,29 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using MnemosyneDomain.Commands.NotebookPages;
+using MnemosyneDomain.Queries.Pages;
 using Testcontainers.PostgreSql;
 
-namespace MnemosyneDomain.Test.Commands.NotebookPages
+namespace MnemosyneDomain.Test.Queries.Pages
 {
-    public class DeleteNotebookPageHandler : IClassFixture<DatabaseContainerFixture>
+    public class GetPagesHandler : IClassFixture<DatabaseContainerFixture>
     {
         private readonly DatabaseContainerFixture _fixture;
 
-        public DeleteNotebookPageHandler(DatabaseContainerFixture fixture)
+        public GetPagesHandler(DatabaseContainerFixture fixture)
         {
             _fixture = fixture;
         }
 
         [Fact]
-        public async Task ShouldDeleteANotebookPage()
+        public async Task ShouldRetrievePages()
         {
             await _fixture.ResetDb();
             // Arrange
             var context = _fixture.CreateContext();
             var authService = FakeAuthorizationHandler.CreateAuthorized();
-            var commandHandler = new NotebookPageCommandHandler(_fixture.CreateContext(), authService);
 
             Guid userId = Guid.NewGuid();
             context.UserInfos.Add(new Models.UserInfo { UserId = userId });
@@ -38,34 +38,36 @@ namespace MnemosyneDomain.Test.Commands.NotebookPages
             context.Notebooks.Add(notebook);
             await context.SaveChangesAsync();
 
-            var notebookPage = new Models.NotebookPage
+            var page = new Models.Page
             {
                 NotebookId = notebook.NotebookId,
-                NotebookPageId = Guid.NewGuid(),
+                PageId = Guid.NewGuid(),
                 Created = DateTime.UtcNow,
-                Updated = DateTime.UtcNow
+                Updated = DateTime.UtcNow,
+                Title = "Page Title",
+                Contents = "Page Contents"
             };
 
-            context.NotebookPages.Add(notebookPage);
+            context.Pages.Add(page);
             await context.SaveChangesAsync();
 
-            Assert.Equal(1, context.NotebookPages.Count());
-
             // Act
-            await commandHandler.HandleAsync(new DeleteNotebookPage(new MnemosyneDomain.Authorization.User(userId), notebook.NotebookId, notebookPage.NotebookPageId));
+            var queryHandler = new PageQueryHandler(context, authService);
+            var result = await queryHandler.HandleAsync(new GetPages(new MnemosyneDomain.Authorization.User(userId), notebook.NotebookId));
 
             // Assert
-            Assert.Equal(0, context.NotebookPages.Count());
+            Assert.NotNull(result);
+            Assert.Single(result);
+            Assert.Equal("Page Title", result.First().Title);
         }
 
         [Fact]
-        public async Task ShouldDoNothingIfUserIsUnauthorized()
+        public async Task ShouldReturnEmptyIfUnauthorized()
         {
             await _fixture.ResetDb();
             // Arrange
             var context = _fixture.CreateContext();
             var authService = FakeAuthorizationHandler.CreateUnauthorized();
-            var commandHandler = new NotebookPageCommandHandler(_fixture.CreateContext(), authService);
 
             Guid userId = Guid.NewGuid();
             context.UserInfos.Add(new Models.UserInfo { UserId = userId });
@@ -80,24 +82,25 @@ namespace MnemosyneDomain.Test.Commands.NotebookPages
             context.Notebooks.Add(notebook);
             await context.SaveChangesAsync();
 
-            var notebookPage = new Models.NotebookPage
+            var page = new Models.Page
             {
                 NotebookId = notebook.NotebookId,
-                NotebookPageId = Guid.NewGuid(),
+                PageId = Guid.NewGuid(),
                 Created = DateTime.UtcNow,
-                Updated = DateTime.UtcNow
+                Updated = DateTime.UtcNow,
+                Title = "Page Title",
+                Contents = "Page Contents"
             };
 
-            context.NotebookPages.Add(notebookPage);
+            context.Pages.Add(page);
             await context.SaveChangesAsync();
 
-            Assert.Equal(1, context.NotebookPages.Count());
-
             // Act
-            await commandHandler.HandleAsync(new DeleteNotebookPage(new MnemosyneDomain.Authorization.User(userId), notebook.NotebookId, notebookPage.NotebookPageId));
+            var queryHandler = new PageQueryHandler(context, authService);
+            var result = await queryHandler.HandleAsync(new GetPages(new MnemosyneDomain.Authorization.User(userId), notebook.NotebookId));
 
             // Assert
-            Assert.Equal(1, context.NotebookPages.Count());
+            Assert.Empty(result);
         }
     }
 }

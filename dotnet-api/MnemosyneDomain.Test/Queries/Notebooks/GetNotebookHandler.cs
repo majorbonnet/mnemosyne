@@ -57,6 +57,7 @@ namespace MnemosyneDomain.Test.Queries.Notebooks
 
             var notebook = new Models.Notebook
             {
+                NotebookId = Guid.NewGuid(),
                 UserId = userId,
                 Created = DateTime.UtcNow,
                 Updated = DateTime.UtcNow
@@ -67,7 +68,7 @@ namespace MnemosyneDomain.Test.Queries.Notebooks
 
             // Act
             var queryHandler = new NotebookQueryHandler(context, FakeAuthorizationHandler.CreateAuthorized());
-            var result = await queryHandler.HandleAsync(new GetNotebook(new MnemosyneDomain.Authorization.User(userId), -99));
+            var result = await queryHandler.HandleAsync(new GetNotebook(new MnemosyneDomain.Authorization.User(userId), Guid.NewGuid()));
 
             // Assert
             Assert.Null(result);

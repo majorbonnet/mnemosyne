@@ -1,4 +1,4 @@
-export default interface NotebookPage {
+export default interface Page {
     notebookPageId: string;
     created: Date;
     updated: Date;

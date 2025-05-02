@@ -22,11 +22,6 @@ namespace MnemosyneDomain.Test
             return Task.FromResult(IsAuthorized);
         }
 
-        public Task<bool> IsAuthorizedAsync<TResource>(User user, int resourceId, List<IAuthorizationRequirement<TResource>> requirements) where TResource : class
-        {
-            return Task.FromResult(IsAuthorized);
-        }
-
         public Task<bool> IsAuthorizedAsync<TResource>(User user, TResource resource, List<IAuthorizationRequirement<TResource>> requirements) where TResource : class
         {
             return Task.FromResult(IsAuthorized);

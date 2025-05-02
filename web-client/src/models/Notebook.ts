@@ -1,4 +1,4 @@
-import type NotebookPage from "./NotebookPage";
+import type Page from "./Page";
 
 export default interface Notebook {
     notebookId: number;
@@ -6,5 +6,5 @@ export default interface Notebook {
     updated: Date;
     title: string;
 
-    pages: NotebookPage[];
+    pages: Page[];
 }

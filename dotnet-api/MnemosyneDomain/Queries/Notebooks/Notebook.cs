@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace MnemosyneDomain.Queries.Notebooks
 {
-    public record Notebook(int NotebookId, DateTime Created, DateTime Updated, string? Title);
+    public record Notebook(Guid NotebookId, DateTime Created, DateTime Updated, string? Title);
 }

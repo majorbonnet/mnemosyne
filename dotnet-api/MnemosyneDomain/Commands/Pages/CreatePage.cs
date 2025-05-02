@@ -5,11 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using MnemosyneDomain.Authorization;
 
-namespace MnemosyneDomain.Queries.NotebookPages
+namespace MnemosyneDomain.Commands.Pages
 {
-    public class GetNotebookPages(User user, int notebookId) : BaseRequest
+    public class CreatePage(User user, Guid notebookId) : BaseRequest
     {
         public User User => user;
-        public int NotebookId => notebookId;
+        public Guid NotebookId => notebookId;
     }
 }

@@ -69,7 +69,7 @@ namespace MnemosyneDomain.Test.Commands.Notebooks
 
             var notebook = new Models.Notebook
             {
-                NotebookId = 0,
+                NotebookId = Guid.NewGuid(),
                 UserId = userId,
                 Created = DateTime.UtcNow,
                 Updated = DateTime.UtcNow

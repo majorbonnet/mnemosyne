@@ -7,5 +7,5 @@ using MnemosyneDomain.Authorization;
 
 namespace MnemosyneDomain.Events
 {
-    public record NotebookCreated(User User, int NotebookId, DateTime Created, DateTime Updated);
+    public record NotebookCreated(User User, Guid NotebookId, DateTime Created, DateTime Updated);
 }

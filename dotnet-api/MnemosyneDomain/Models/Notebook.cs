@@ -5,7 +5,7 @@ namespace MnemosyneDomain.Models;
 
 public partial class Notebook
 {
-    public int NotebookId { get; set; }
+    public Guid NotebookId { get; set; }
 
     public Guid UserId { get; set; }
 
@@ -15,7 +15,7 @@ public partial class Notebook
 
     public string? Title { get; set; }
 
-    public virtual ICollection<NotebookPage> NotebookPages { get; set; } = new List<NotebookPage>();
+    public virtual ICollection<Page> Pages { get; set; } = new List<Page>();
 
     public virtual UserInfo User { get; set; } = null!;
 }

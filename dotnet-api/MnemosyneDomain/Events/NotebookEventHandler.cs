@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using MnemosyneDomain.Commands.NotebookPages;
+using MnemosyneDomain.Commands.Pages;
 
 namespace MnemosyneDomain.Events
 {
     public class NotebookEventHandler
     {
         // whenever a notebook is created, we want to create the first page
-        public CreateNotebookPage HandleAsync(NotebookCreated @event)
+        public CreatePage HandleAsync(NotebookCreated @event)
         {
-            return new CreateNotebookPage(@event.User, @event.NotebookId);
+            return new CreatePage(@event.User, @event.NotebookId);
         }
     }
 }

@@ -4,12 +4,12 @@ import debounce from 'lodash.debounce';
 
 import MnemosyneApi from '../services/MnemosyneApi';
 import type Notebook from '../models/Notebook';
-import type NotebookPage from '../models/NotebookPage';
+import type Page from '../models/Page';
 
 export const useNotebookStore = defineStore("notebookStore", () => {
     const notebooks = ref<Notebook[]>([])
     const selectedNotebook = ref<Notebook>({} as Notebook);
-    const selectedPage = ref<NotebookPage>({} as NotebookPage);
+    const selectedPage = ref<Page>({} as Page);
 
     async function fetchNotebooks() {
         const response = await MnemosyneApi.get<Notebook[]>("notebooks");
@@ -34,7 +34,7 @@ export const useNotebookStore = defineStore("notebookStore", () => {
     }
 
     async function selectNotebook(notebook: Notebook) {
-        const response = await MnemosyneApi.get<NotebookPage[]>(`notebooks/${notebook.notebookId}`);
+        const response = await MnemosyneApi.get<Page[]>(`notebooks/${notebook.notebookId}`);
         notebook.pages = response.data;
         selectedNotebook.value = notebook;
         selectedPage.value = notebook.pages[0];
@@ -52,7 +52,7 @@ export const useNotebookStore = defineStore("notebookStore", () => {
         selectedPage: selectedPage,
         fetchNotebooks: fetchNotebooks,
         createNotebook: createNotebook,
-        addNotebook: addNotebook,
-        selectNotebook: selectNotebook
+        selectNotebook: selectNotebook,
+        addNotebook: addNotebook
     }
 });

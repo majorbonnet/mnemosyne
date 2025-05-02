@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace MnemosyneDomain.Models;
 
-public partial class NotebookPage
+public partial class Page
 {
-    public Guid NotebookPageId { get; set; }
+    public Guid PageId { get; set; }
 
-    public int NotebookId { get; set; }
+    public Guid NotebookId { get; set; }
 
     public DateTime Created { get; set; }
 

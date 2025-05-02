@@ -5,12 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using MnemosyneDomain.Authorization;
 
-namespace MnemosyneDomain.Commands.Notebooks
+namespace MnemosyneDomain.Commands.Pages
 {
-    public class DeleteNotebook(User user, Guid notebookId) : BaseRequest
+    public class DeletePage(User user, Guid notebookId, Guid pageId) : BaseRequest
     {
         public User User => user;
         public Guid NotebookId => notebookId;
+        public Guid PageId => pageId;
     }
-
 }

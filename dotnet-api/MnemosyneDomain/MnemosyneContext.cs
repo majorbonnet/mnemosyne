@@ -16,7 +16,7 @@ public partial class MnemosyneContext : DbContext
 
     public virtual DbSet<Notebook> Notebooks { get; set; }
 
-    public virtual DbSet<NotebookPage> NotebookPages { get; set; }
+    public virtual DbSet<Page> Pages { get; set; }
 
     public virtual DbSet<UserInfo> UserInfos { get; set; }
 
@@ -52,7 +52,7 @@ public partial class MnemosyneContext : DbContext
             entity.ToTable("notebook");
 
             entity.Property(e => e.NotebookId)
-                .UseIdentityAlwaysColumn()
+                .ValueGeneratedNever()
                 .HasColumnName("notebook_id");
             entity.Property(e => e.Created).HasColumnName("created");
             entity.Property(e => e.Title)
@@ -67,15 +67,15 @@ public partial class MnemosyneContext : DbContext
                 .HasConstraintName("fk_notebook_user_info");
         });
 
-        modelBuilder.Entity<NotebookPage>(entity =>
+        modelBuilder.Entity<Page>(entity =>
         {
-            entity.HasKey(e => e.NotebookPageId).HasName("notebook_page_pkey");
+            entity.HasKey(e => e.PageId).HasName("page_pkey");
 
-            entity.ToTable("notebook_page");
+            entity.ToTable("page");
 
-            entity.Property(e => e.NotebookPageId)
+            entity.Property(e => e.PageId)
                 .ValueGeneratedNever()
-                .HasColumnName("notebook_page_id");
+                .HasColumnName("page_id");
             entity.Property(e => e.Contents).HasColumnName("contents");
             entity.Property(e => e.Created).HasColumnName("created");
             entity.Property(e => e.NotebookId).HasColumnName("notebook_id");
@@ -85,10 +85,10 @@ public partial class MnemosyneContext : DbContext
                 .HasColumnName("title");
             entity.Property(e => e.Updated).HasColumnName("updated");
 
-            entity.HasOne(d => d.Notebook).WithMany(p => p.NotebookPages)
+            entity.HasOne(d => d.Notebook).WithMany(p => p.Pages)
                 .HasForeignKey(d => d.NotebookId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("fk_notebook_page_notebook");
+                .HasConstraintName("fk_page_notebook");
         });
 
         modelBuilder.Entity<UserInfo>(entity =>

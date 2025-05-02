@@ -3,9 +3,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MnemosyneDomain.Authorization;
-using MnemosyneDomain.Commands.NotebookPages;
+using MnemosyneDomain.Commands.Pages;
 using MnemosyneDomain.Commands.Notebooks;
-using MnemosyneDomain.Queries.NotebookPages;
+using MnemosyneDomain.Queries.Pages;
 using MnemosyneDomain.Queries.Notebooks;
 
 namespace MnemosyneDomain

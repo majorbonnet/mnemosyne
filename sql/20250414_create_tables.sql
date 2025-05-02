@@ -3,7 +3,7 @@ CREATE TABLE user_info (
 );
 
 CREATE TABLE notebook (
-	notebook_id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	notebook_id UUID PRIMARY KEY,
 	user_id UUID NOT NULL,
 	created TIMESTAMPTZ NOT NULL,
 	updated TIMESTAMPTZ NOT NULL,
@@ -13,15 +13,15 @@ CREATE TABLE notebook (
 			REFERENCES user_info(user_id)
 );
 
-CREATE TABLE notebook_page (
-	notebook_page_id UUID PRIMARY KEY,
-	notebook_id INT NOT NULL,
+CREATE TABLE page (
+	page_id UUID PRIMARY KEY,
+	notebook_id UUID NOT NULL,
 	created TIMESTAMPTZ NOT NULL,
 	updated TIMESTAMPTZ NOT NULL,
 	page_number INT NOT NULL,
 	title VARCHAR(200),
 	contents TEXT,
-	CONSTRAINT fk_notebook_page_notebook
+	CONSTRAINT fk_page_notebook
 		FOREIGN KEY(notebook_id)
 			REFERENCES notebook(notebook_id)
 );

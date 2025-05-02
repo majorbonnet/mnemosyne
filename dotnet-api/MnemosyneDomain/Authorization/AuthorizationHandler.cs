@@ -56,34 +56,6 @@ namespace MnemosyneDomain.Authorization
         }
 
         /// <summary>
-        /// Check if the user is authorized to access a resource based on requirements. Use this overload in situations where the resource is not needed outside of the authz check,
-        /// such as when checking for ability to interact with a sub-resource
-        /// </summary>
-        /// <typeparam name="TResource"></typeparam>
-        /// <param name="user"></param>
-        /// <param name="resourceId"></param>
-        /// <param name="requirements"></param>
-        /// <returns></returns>
-        public async Task<bool> IsAuthorizedAsync<TResource>(User user, int resourceId, List<IAuthorizationRequirement<TResource>> requirements) where TResource : class
-        {
-            if (user is null) return false;
-
-            TResource? resource = await _context.Set<TResource>().FindAsync(resourceId);
-
-            if (resource is null) return false;
-
-            foreach (var requirement in requirements)
-            {
-                if (!requirement.IsMet(user, resource))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        /// <summary>
         /// Check if the user is authorized to access a resource based on requirements. Use this overload in situations where the resource is already loaded in memory, 
         /// ie when the resource is needed outside the context of the authz check.
         /// </summary>

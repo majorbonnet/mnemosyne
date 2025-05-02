@@ -21,6 +21,15 @@ const renderApp = () => {
   app.use(pinia);
   app.use(router);
   app.mount('#app');
+
+  // Register a global custom directive called `v-focus`
+  app.directive('focus', {
+    // When the bound element is mounted into the DOM...
+    mounted(el) {
+      // Focus the element
+      el.focus()
+    }
+  })
 }
 
 keycloakService.init(renderApp);

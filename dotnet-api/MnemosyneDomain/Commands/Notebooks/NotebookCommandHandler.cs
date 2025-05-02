@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using MnemosyneDomain.Authorization;
-using MnemosyneDomain.Commands.NotebookPages;
+using MnemosyneDomain.Commands.Pages;
 using MnemosyneDomain.Events;
 using MnemosyneDomain.Models;
 using Wolverine;
@@ -28,6 +28,7 @@ namespace MnemosyneDomain.Commands.Notebooks
         {
             Notebook newNotebook = new()
             {
+                NotebookId = Guid.NewGuid(),
                 Created = DateTime.UtcNow,
                 Updated = DateTime.UtcNow,
                 UserId = request.User.UserId

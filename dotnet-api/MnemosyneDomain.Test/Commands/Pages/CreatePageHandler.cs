@@ -2,28 +2,28 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using MnemosyneDomain.Commands.NotebookPages;
+using MnemosyneDomain.Commands.Pages;
 using Testcontainers.PostgreSql;
 
-namespace MnemosyneDomain.Test.Commands.NotebookPages
+namespace MnemosyneDomain.Test.Commands.Pages
 {
-    public class CreateNotebookPageHandler : IClassFixture<DatabaseContainerFixture>
+    public class CreatePageHandler : IClassFixture<DatabaseContainerFixture>
     {
         private readonly DatabaseContainerFixture _fixture;
 
-        public CreateNotebookPageHandler(DatabaseContainerFixture fixture)
+        public CreatePageHandler(DatabaseContainerFixture fixture)
         {
             _fixture = fixture;
         }
 
         [Fact]
-        public async Task ShouldCreateANotebookPage()
+        public async Task ShouldCreateAPage()
         {
             await _fixture.ResetDb();
             // Arrange
             var context = _fixture.CreateContext();
             var authService = FakeAuthorizationHandler.CreateAuthorized();
-            var commandHandler = new NotebookPageCommandHandler(context, authService);
+            var commandHandler = new PageCommandHandler(context, authService);
 
             Guid userId = Guid.NewGuid();
             context.UserInfos.Add(new Models.UserInfo { UserId = userId });
@@ -39,12 +39,12 @@ namespace MnemosyneDomain.Test.Commands.NotebookPages
             await context.SaveChangesAsync();
 
             // Act
-            var result = await commandHandler.HandleAsync(new CreateNotebookPage(new MnemosyneDomain.Authorization.User(userId), notebook.NotebookId));
+            var result = await commandHandler.HandleAsync(new CreatePage(new MnemosyneDomain.Authorization.User(userId), notebook.NotebookId));
 
             // Assert
             Assert.NotNull(result);
             Assert.Equal(notebook.NotebookId, result.NotebookId);
-            Assert.NotEqual(Guid.Empty, result.NotebookPageId);
+            Assert.NotEqual(Guid.Empty, result.PageId);
         }
 
         [Fact]
@@ -54,7 +54,7 @@ namespace MnemosyneDomain.Test.Commands.NotebookPages
             // Arrange
             var context = _fixture.CreateContext();
             var authService = FakeAuthorizationHandler.CreateUnauthorized();
-            var commandHandler = new NotebookPageCommandHandler(_fixture.CreateContext(), authService);
+            var commandHandler = new PageCommandHandler(_fixture.CreateContext(), authService);
 
             Guid userId = Guid.NewGuid();
             context.UserInfos.Add(new Models.UserInfo { UserId = userId });
@@ -70,11 +70,11 @@ namespace MnemosyneDomain.Test.Commands.NotebookPages
             await context.SaveChangesAsync();
 
             // Act
-            var result = await commandHandler.HandleAsync(new CreateNotebookPage(new MnemosyneDomain.Authorization.User(userId), notebook.NotebookId));
+            var result = await commandHandler.HandleAsync(new CreatePage(new MnemosyneDomain.Authorization.User(userId), notebook.NotebookId));
 
             // Assert
             Assert.Null(result);
-            Assert.Equal(0, context.NotebookPages.Count());
+            Assert.Equal(0, context.Pages.Count());
         }
     }
 }

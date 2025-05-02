@@ -1,27 +1,27 @@
 ﻿using MnemosyneDomain.Authorization;
 
-namespace MnemosyneDomain.Queries.NotebookPages
+namespace MnemosyneDomain.Queries.Pages
 {
-    public class NotebookPagesQueryHandler
+    public class PageQueryHandler
     {
         private readonly MnemosyneContext _context;
         private readonly IAuthorizationHandler _authService;
 
-        public NotebookPagesQueryHandler(MnemosyneContext context, IAuthorizationHandler authService)
+        public PageQueryHandler(MnemosyneContext context, IAuthorizationHandler authService)
         {
             _context = context;
             _authService = authService;
         }
 
-        public async Task<List<NotebookPage>> HandleAsync(GetNotebookPages request)
+        public async Task<List<Page>> HandleAsync(GetPages request)
         {
-            if (!await _authService.IsAuthorizedAsync(request.User, request.NotebookId, AuthorizationPolicies.NotebookOwner)) return new List<NotebookPage>();
+            if (!await _authService.IsAuthorizedAsync(request.User, request.NotebookId, AuthorizationPolicies.NotebookOwner)) return new List<Page>();
 
-            List<NotebookPage> pages = _context.NotebookPages
+            List<Page> pages = _context.Pages
                 .Where(p => p.NotebookId == request.NotebookId)
-                .Select(x => new NotebookPage
+                .Select(x => new Page
                 (
-                    x.NotebookPageId,
+                    x.PageId,
                     x.Created,
                     x.Updated,
                     x.PageNumber,

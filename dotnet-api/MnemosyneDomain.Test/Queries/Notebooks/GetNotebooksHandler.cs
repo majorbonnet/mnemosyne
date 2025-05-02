@@ -60,6 +60,7 @@ namespace MnemosyneDomain.Test.Queries.Notebooks
 
             var notebook = new Models.Notebook
             {
+                NotebookId = Guid.NewGuid(),
                 UserId = userId,
                 Created = DateTime.UtcNow,
                 Updated = DateTime.UtcNow
@@ -67,6 +68,7 @@ namespace MnemosyneDomain.Test.Queries.Notebooks
 
             var notebook2 = new Models.Notebook
             {
+                NotebookId = Guid.NewGuid(),
                 UserId = userId2,
                 Created = DateTime.UtcNow,
                 Updated = DateTime.UtcNow
