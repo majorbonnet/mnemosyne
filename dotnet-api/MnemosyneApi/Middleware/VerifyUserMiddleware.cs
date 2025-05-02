@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
+using MnemosyneApi.Extensions;
 using MnemosyneDomain.Authorization;
 using Wolverine;
 using Wolverine.Http;
@@ -10,13 +11,11 @@ namespace MnemosyneApi.Middleware
     {
         public static async Task<(User, ProblemDetails)> Load(IMessageBus bus, ClaimsPrincipal user)
         {
-            string userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
-
-            if (!string.IsNullOrEmpty(userId) && Guid.TryParse(userId, out Guid parsedUserId))
+            if (user.GetUserId() is Guid userId)
             {
-                await bus.InvokeAsync(new VerifyUser(parsedUserId));
+                await bus.InvokeAsync(new VerifyUser(userId));
 
-                return (new User(parsedUserId), WolverineContinue.NoProblems);
+                return (new User(userId), WolverineContinue.NoProblems);
             }
 
             return (new User(Guid.Empty), new ProblemDetails { Detail = "Unauthorized", Status = 401 });

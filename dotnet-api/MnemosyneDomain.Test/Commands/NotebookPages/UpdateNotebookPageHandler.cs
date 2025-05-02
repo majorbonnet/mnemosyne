@@ -52,7 +52,7 @@ namespace MnemosyneDomain.Test.Commands.NotebookPages
             await context.SaveChangesAsync();
 
             // Act
-            await commandHandler.HandleAsync(new UpdateNotebookPage(new Authorization.User(userId), notebook.NotebookId, notebookPage.NotebookPageId, "New Title", "New Contents"));
+            await commandHandler.HandleAsync(new UpdateNotebookPage(new MnemosyneDomain.Authorization.User(userId), notebook.NotebookId, notebookPage.NotebookPageId, "New Title", "New Contents"));
 
             // Assert
             context.Entry(notebookPage).Reload();
@@ -96,7 +96,7 @@ namespace MnemosyneDomain.Test.Commands.NotebookPages
             await context.SaveChangesAsync();
 
             // Act
-            await commandHandler.HandleAsync(new UpdateNotebookPage(new Authorization.User(userId), notebook.NotebookId, notebookPage.NotebookPageId, "New Title", "New Contents"));
+            await commandHandler.HandleAsync(new UpdateNotebookPage(new MnemosyneDomain.Authorization.User(userId), notebook.NotebookId, notebookPage.NotebookPageId, "New Title", "New Contents"));
 
             // Assert
             var updatedPage = await context.NotebookPages.FindAsync(notebookPage.NotebookPageId);

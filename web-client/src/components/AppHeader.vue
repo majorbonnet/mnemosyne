@@ -38,7 +38,7 @@ const toggleShelf = () => {
                     <li v-for="notebook in notebookStore.notebooks" class="bg-(--dark-blue-color) mt-1 mx-1 min-w-8 min-h-full rounded inline-block" @click="notebookStore.selectNotebook(notebook)">
                         {{ notebook.title ?? "&nbsp;" }}
                     </li>
-                    <li class="bg-(--dark-blue-color) mt-1 mx-1 min-w-8 min-h-full rounded inline-block" @click="notebookStore.addNotebook()">
+                    <li class="bg-(--dark-blue-color) mt-1 mx-1 min-w-8 min-h-full rounded inline-block" @click="notebookStore.createNotebook()">
                         <div class="w-full h-full flex items-center">
                             <img src="/plus_icon.png" class="inline h-8 w-8" />
                         </div>

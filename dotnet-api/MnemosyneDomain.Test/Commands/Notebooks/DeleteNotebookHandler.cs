@@ -46,7 +46,7 @@ namespace MnemosyneDomain.Test.Commands.Notebooks
             Assert.Equal(1, context.Notebooks.Count());
 
             // Act
-            await commandHandler.HandleAsync(new DeleteNotebook(new Authorization.User(userId), notebook.NotebookId));
+            await commandHandler.HandleAsync(new DeleteNotebook(new MnemosyneDomain.Authorization.User(userId), notebook.NotebookId));
 
             // Assert
             Assert.Equal(0, context.Notebooks.Count());
@@ -81,7 +81,7 @@ namespace MnemosyneDomain.Test.Commands.Notebooks
             Assert.Equal(1, context.Notebooks.Count());
 
             // Act
-            await commandHandler.HandleAsync(new DeleteNotebook(new Authorization.User(userId), notebook.NotebookId));
+            await commandHandler.HandleAsync(new DeleteNotebook(new MnemosyneDomain.Authorization.User(userId), notebook.NotebookId));
 
             // Assert
             Assert.Equal(1, context.Notebooks.Count());

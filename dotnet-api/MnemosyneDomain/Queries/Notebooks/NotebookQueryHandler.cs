@@ -14,10 +14,12 @@ namespace MnemosyneDomain.Queries.Notebooks
     public class NotebookQueryHandler
     {
         private readonly MnemosyneContext _context;
+        private readonly IAuthorizationHandler _authorizationHandler;
 
-        public NotebookQueryHandler(MnemosyneContext context)
+        public NotebookQueryHandler(MnemosyneContext context, IAuthorizationHandler authorizationHandler)
         {
             _context = context;
+            _authorizationHandler = authorizationHandler;
         }
 
         public async Task<List<Notebook>> HandleAsync(GetNotebooks request)
@@ -33,6 +35,23 @@ namespace MnemosyneDomain.Queries.Notebooks
                 .ToListAsync();
 
             return notebooks;
+        }
+
+        public async Task<Notebook?> HandleAsync(GetNotebook request)
+        {
+            if (!(await _authorizationHandler.IsAuthorizedAsync(request.User, request.NotebookId, AuthorizationPolicies.NotebookOwner))) return null;
+
+            if (await _context.Notebooks.FindAsync(request.NotebookId) is Models.Notebook notebook)
+            {
+                return new Notebook(
+                    notebook.NotebookId,
+                    notebook.Created,
+                    notebook.Updated,
+                    notebook.Title
+                );
+            }
+
+            return null;      
         }
     }
 }

@@ -39,7 +39,7 @@ namespace MnemosyneDomain.Test.Commands.NotebookPages
             await context.SaveChangesAsync();
 
             // Act
-            var result = await commandHandler.HandleAsync(new CreateNotebookPage(new Authorization.User(userId), notebook.NotebookId));
+            var result = await commandHandler.HandleAsync(new CreateNotebookPage(new MnemosyneDomain.Authorization.User(userId), notebook.NotebookId));
 
             // Assert
             Assert.NotNull(result);
@@ -70,7 +70,7 @@ namespace MnemosyneDomain.Test.Commands.NotebookPages
             await context.SaveChangesAsync();
 
             // Act
-            var result = await commandHandler.HandleAsync(new CreateNotebookPage(new Authorization.User(userId), notebook.NotebookId));
+            var result = await commandHandler.HandleAsync(new CreateNotebookPage(new MnemosyneDomain.Authorization.User(userId), notebook.NotebookId));
 
             // Assert
             Assert.Null(result);

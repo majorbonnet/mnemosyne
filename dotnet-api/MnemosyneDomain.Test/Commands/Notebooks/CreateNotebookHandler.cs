@@ -36,7 +36,7 @@ namespace MnemosyneDomain.Test.Commands.Notebooks
             await context.SaveChangesAsync();
 
             // Act
-            var result = await commandHandler.HandleAsync(new CreateNotebook(new Authorization.User(userId)));
+            var result = await commandHandler.HandleAsync(new CreateNotebook(new MnemosyneDomain.Authorization.User(userId)));
 
             // Assert
             Assert.NotNull(result);

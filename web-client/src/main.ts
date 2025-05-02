@@ -3,7 +3,7 @@ import { createPinia } from 'pinia';
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
 import App from './App.vue';
 import router from './router/Index';
-import AuthStorePlugin from './plugins/AuthStorePlugin';
+import AuthStorePlugin from './plugins/StorePlugin';
 import keycloakService from './services/KeycloakService';
 
 // Styles
@@ -23,6 +23,5 @@ const renderApp = () => {
   app.mount('#app');
 }
 
-//renderApp();
+keycloakService.init(renderApp);
 
-keycloakService.CallInit(renderApp);

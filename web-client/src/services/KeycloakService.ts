@@ -64,10 +64,10 @@ async function refreshToken() {
 }
 
 const KeycloakService = {
-  CallInit: init,
-  CallInitStore: initStore,
-  CallLogout: logout,
-  CallTokenRefresh: refreshToken
+  init,
+  initStore,
+  logout,
+  refreshToken
 };
 
 export default KeycloakService;

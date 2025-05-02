@@ -11,7 +11,7 @@ namespace MnemosyneDomain.Authorization.Requirements
     {
         public bool IsMet(User user, NotebookPage resource)
         {
-            if (resource.Notebook is null)
+            if (resource?.Notebook is null)
             {
                 return false;
             }

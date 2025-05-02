@@ -24,7 +24,7 @@ export const useAuthStore = defineStore("storeAuth", {
       // Logout user
       async logout() {
         try {
-          await keycloakService.CallLogout(import.meta.env.VITE_APP_URL);
+          await keycloakService.logout(import.meta.env.VITE_APP_URL);
           await this.clearUserData();
         } catch (error) {
           console.error(error);
@@ -33,7 +33,7 @@ export const useAuthStore = defineStore("storeAuth", {
       // Refresh user's token
       async refreshUserToken() {
         try {
-          const keycloak = await keycloakService.CallTokenRefresh();
+          const keycloak = await keycloakService.refreshToken();
           this.initOauth(keycloak, false);
         } catch (error) {
           console.error(error);

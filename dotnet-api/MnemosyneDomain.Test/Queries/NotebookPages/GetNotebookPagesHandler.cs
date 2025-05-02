@@ -53,7 +53,7 @@ namespace MnemosyneDomain.Test.Queries.NotebookPages
 
             // Act
             var queryHandler = new NotebookPagesQueryHandler(context, authService);
-            var result = await queryHandler.HandleAsync(new GetNotebookPages(new Authorization.User(userId), notebook.NotebookId));
+            var result = await queryHandler.HandleAsync(new GetNotebookPages(new MnemosyneDomain.Authorization.User(userId), notebook.NotebookId));
 
             // Assert
             Assert.NotNull(result);
@@ -97,7 +97,7 @@ namespace MnemosyneDomain.Test.Queries.NotebookPages
 
             // Act
             var queryHandler = new NotebookPagesQueryHandler(context, authService);
-            var result = await queryHandler.HandleAsync(new GetNotebookPages(new Authorization.User(userId), notebook.NotebookId));
+            var result = await queryHandler.HandleAsync(new GetNotebookPages(new MnemosyneDomain.Authorization.User(userId), notebook.NotebookId));
 
             // Assert
             Assert.Empty(result);

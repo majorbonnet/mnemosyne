@@ -52,7 +52,7 @@ namespace MnemosyneDomain.Test.Commands.NotebookPages
             Assert.Equal(1, context.NotebookPages.Count());
 
             // Act
-            await commandHandler.HandleAsync(new DeleteNotebookPage(new Authorization.User(userId), notebook.NotebookId, notebookPage.NotebookPageId));
+            await commandHandler.HandleAsync(new DeleteNotebookPage(new MnemosyneDomain.Authorization.User(userId), notebook.NotebookId, notebookPage.NotebookPageId));
 
             // Assert
             Assert.Equal(0, context.NotebookPages.Count());
@@ -94,7 +94,7 @@ namespace MnemosyneDomain.Test.Commands.NotebookPages
             Assert.Equal(1, context.NotebookPages.Count());
 
             // Act
-            await commandHandler.HandleAsync(new DeleteNotebookPage(new Authorization.User(userId), notebook.NotebookId, notebookPage.NotebookPageId));
+            await commandHandler.HandleAsync(new DeleteNotebookPage(new MnemosyneDomain.Authorization.User(userId), notebook.NotebookId, notebookPage.NotebookPageId));
 
             // Assert
             Assert.Equal(1, context.NotebookPages.Count());
