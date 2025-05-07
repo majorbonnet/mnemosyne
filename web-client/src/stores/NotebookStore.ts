@@ -20,9 +20,9 @@ export const useNotebookStore = defineStore("notebookStore", () => {
         }
     }
 
+    // notebook will get added to the list via signalr
     async function createNotebook() {
-        const response = await MnemosyneApi.post<Notebook>("notebooks");
-        notebooks.value.push(response.data)
+        await MnemosyneApi.post<Notebook>("notebooks");
     }
 
     async function addNotebook(notebook: Notebook) {
@@ -40,11 +40,13 @@ export const useNotebookStore = defineStore("notebookStore", () => {
         selectedPage.value = notebook.pages[0];
     }
 
-    watch(() => selectedPage.value?.contents, debounce(async () => {
+    async function updatePage(contents: string) {
+        console.log(selectedPage);
         if (selectedPage.value) {
-            await MnemosyneApi.post(`notebooks/${selectedNotebook.value.notebookId}/${selectedPage.value.notebookPageId}`, { "title": null, "contents": selectedPage.value.contents });
+            await MnemosyneApi.post(`notebooks/${selectedNotebook.value.notebookId}/${selectedPage.value.pageId}`, { "title": null, "contents": contents });
+            selectedPage.value.contents = contents;
         }
-    }, 500));
+    }
 
     return {
         notebooks: notebooks,
@@ -53,6 +55,7 @@ export const useNotebookStore = defineStore("notebookStore", () => {
         fetchNotebooks: fetchNotebooks,
         createNotebook: createNotebook,
         selectNotebook: selectNotebook,
-        addNotebook: addNotebook
+        addNotebook: addNotebook,
+        updatePage: updatePage
     }
 });

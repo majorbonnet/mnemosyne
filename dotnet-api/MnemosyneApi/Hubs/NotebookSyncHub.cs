@@ -35,11 +35,11 @@ namespace MnemosyneApi.Hubs
             _hubContext = hub;
         }
 
-        public async Task Handle(NotebookCreated notebookCreated, IMessageBus bus)
+        public async Task HandleAsync(NotebookCreated notebookCreated, IMessageBus bus, CancellationToken cancellationToken)
         {
             if (NotebookSyncHub.ConnectedUsers.TryGetValue(notebookCreated.User.UserId, out var connectionId))
             {
-                Notebook notebook = await bus.InvokeAsync<Notebook>(new GetNotebook(notebookCreated.User, notebookCreated.NotebookId));
+                Notebook notebook = await bus.InvokeAsync<Notebook>(new GetNotebook(notebookCreated.User, notebookCreated.NotebookId), cancellationToken);
 
                 await _hubContext.Clients.Client(connectionId).SendAsync("NotebookCreated", notebook);
             }

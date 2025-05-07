@@ -8,6 +8,7 @@ using MnemosyneDomain.Events;
 using MnemosyneDomain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using Wolverine.Attributes;
 
 namespace MnemosyneDomain.Commands.Pages
 {
@@ -22,7 +23,8 @@ namespace MnemosyneDomain.Commands.Pages
             _authService = authService;
         }
 
-        public async Task<PageCreated?> HandleAsync(CreatePage request)
+        [AlwaysPublishResponse]
+        public async Task<PageCreated?> HandleAsync(CreatePage request, CancellationToken cancellationToken = default)
         {
             if (!await _authService.IsAuthorizedAsync(request.User, request.NotebookId, AuthorizationPolicies.NotebookOwner)) return null;
 
@@ -37,8 +39,8 @@ namespace MnemosyneDomain.Commands.Pages
                 PageNumber = existingPageCount
             };
 
-            await _context.Pages.AddAsync(page);
-            await _context.SaveChangesAsync();
+            await _context.Pages.AddAsync(page, cancellationToken);
+            await _context.SaveChangesAsync(cancellationToken);
 
             return new PageCreated(
                 request.User,
@@ -48,7 +50,7 @@ namespace MnemosyneDomain.Commands.Pages
             );
         }
 
-        public async Task HandleAsync(DeletePage request)
+        public async Task HandleAsync(DeletePage request, CancellationToken cancellationToken = default)
         {
             var page = await _context.Pages.FirstOrDefaultAsync(p => p.PageId == request.PageId);
 
@@ -58,10 +60,10 @@ namespace MnemosyneDomain.Commands.Pages
                 return;
 
             _context.Pages.Remove(page);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task HandleAsync(UpdatePage request)
+        public async Task HandleAsync(UpdatePage request, CancellationToken cancellationToken = default)
         {
             if (!await _authService.IsAuthorizedAsync(request.User, request.NotebookId, AuthorizationPolicies.NotebookOwner)) return;
 
@@ -73,7 +75,7 @@ namespace MnemosyneDomain.Commands.Pages
                 page.Updated = DateTime.UtcNow;
 
                 _context.Pages.Update(page);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(cancellationToken);
             }
         }
 

@@ -15,9 +15,9 @@ namespace MnemosyneApi.Endpoints
         /// <param name="bus"></param>
         /// <returns>A list of <see cref="Notebook"> instances</returns>
         [WolverineGet("/api/notebooks")]
-        public static async Task<List<Notebook>> GetNotebooks(IMessageBus bus, [NotBody] User user)
+        public static async Task<List<Notebook>> GetNotebooks(IMessageBus bus, [NotBody] User user, CancellationToken cancellationToken)
         {
-            return await bus.InvokeAsync<List<Notebook>>(new GetNotebooks(user));
+            return await bus.InvokeAsync<List<Notebook>>(new GetNotebooks(user), cancellationToken);
         }
 
         /// <summary>
@@ -26,9 +26,9 @@ namespace MnemosyneApi.Endpoints
         /// <param name="bus"></param>
         /// <returns>A <see cref="NotebookCreated"/> instance with the new notebook info</returns>
         [WolverinePost("/api/notebooks")]
-        public static async Task<NotebookCreated> CreateNotebook(IMessageBus bus, [NotBody] User user)
+        public static async Task<NotebookCreated> CreateNotebook(IMessageBus bus, [NotBody] User user, CancellationToken cancellationToken)
         {
-            return await bus.InvokeAsync<NotebookCreated>(new CreateNotebook(user));
+            return await bus.InvokeAsync<NotebookCreated>(new CreateNotebook(user), cancellationToken);
         }
     }
 }

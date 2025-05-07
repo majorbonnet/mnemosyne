@@ -1,4 +1,5 @@
-﻿using MnemosyneDomain.Authorization;
+﻿using Microsoft.EntityFrameworkCore;
+using MnemosyneDomain.Authorization;
 
 namespace MnemosyneDomain.Queries.Pages
 {
@@ -13,11 +14,11 @@ namespace MnemosyneDomain.Queries.Pages
             _authService = authService;
         }
 
-        public async Task<List<Page>> HandleAsync(GetPages request)
+        public async Task<List<Page>> HandleAsync(GetPages request, CancellationToken cancellationToken = default)
         {
             if (!await _authService.IsAuthorizedAsync(request.User, request.NotebookId, AuthorizationPolicies.NotebookOwner)) return new List<Page>();
 
-            List<Page> pages = _context.Pages
+            List<Page> pages = await _context.Pages
                 .Where(p => p.NotebookId == request.NotebookId)
                 .Select(x => new Page
                 (
@@ -28,7 +29,7 @@ namespace MnemosyneDomain.Queries.Pages
                     x.Title,
                     x.Contents
                 ))
-                .ToList();
+                .ToListAsync(cancellationToken);
 
             return pages;
         }

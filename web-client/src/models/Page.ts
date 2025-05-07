@@ -1,5 +1,5 @@
 export default interface Page {
-    notebookPageId: string;
+    pageId: string;
     created: Date;
     updated: Date;
     pageNumber: number;

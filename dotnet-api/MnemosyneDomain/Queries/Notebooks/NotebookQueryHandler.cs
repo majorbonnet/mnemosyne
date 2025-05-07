@@ -22,7 +22,7 @@ namespace MnemosyneDomain.Queries.Notebooks
             _authorizationHandler = authorizationHandler;
         }
 
-        public async Task<List<Notebook>> HandleAsync(GetNotebooks request)
+        public async Task<List<Notebook>> HandleAsync(GetNotebooks request, CancellationToken cancellationToken = default)
         {
             List<Notebook> notebooks = await _context.Notebooks
                 .Where(n => n.UserId == request.User.UserId)
@@ -32,16 +32,16 @@ namespace MnemosyneDomain.Queries.Notebooks
                     x.Updated,
                     x.Title
                 ))
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             return notebooks;
         }
 
-        public async Task<Notebook?> HandleAsync(GetNotebook request)
+        public async Task<Notebook?> HandleAsync(GetNotebook request, CancellationToken cancellationToken = default)
         {
             if (!(await _authorizationHandler.IsAuthorizedAsync(request.User, request.NotebookId, AuthorizationPolicies.NotebookOwner))) return null;
 
-            if (await _context.Notebooks.FindAsync(request.NotebookId) is Models.Notebook notebook)
+            if (await _context.Notebooks.FindAsync(request.NotebookId, cancellationToken) is Models.Notebook notebook)
             {
                 return new Notebook(
                     notebook.NotebookId,

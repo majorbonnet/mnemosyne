@@ -35,9 +35,10 @@ namespace MnemosyneApi.Endpoints
         public static async Task<PageCreated> CreatePage(
             IMessageBus bus,
             [NotBody] User user,
-            Guid notebookId)
+            Guid notebookId,
+            CancellationToken cancellationToken)
         {
-            return await bus.InvokeAsync<PageCreated>(new CreatePage(user, notebookId));
+            return await bus.InvokeAsync<PageCreated>(new CreatePage(user, notebookId), cancellationToken);
         }
 
         public class UpdatePageRequest
@@ -51,9 +52,10 @@ namespace MnemosyneApi.Endpoints
             [NotBody] User user,
             Guid notebookId,
             Guid pageId,
-            UpdatePageRequest request)
+            UpdatePageRequest request,
+            CancellationToken cancellationToken)
         {
-            await bus.InvokeAsync(new UpdatePage(user, notebookId, pageId, request.Contents));
+            await bus.InvokeAsync(new UpdatePage(user, notebookId, pageId, request.Contents), cancellationToken);
         }
     }
 }

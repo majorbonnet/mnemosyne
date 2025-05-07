@@ -10,6 +10,7 @@ using MnemosyneDomain.Commands.Pages;
 using MnemosyneDomain.Events;
 using MnemosyneDomain.Models;
 using Wolverine;
+using Wolverine.Attributes;
 
 namespace MnemosyneDomain.Commands.Notebooks
 {
@@ -24,7 +25,8 @@ namespace MnemosyneDomain.Commands.Notebooks
             _authService = authService;
         }
 
-        public async Task<NotebookCreated> HandleAsync(CreateNotebook request)
+        [AlwaysPublishResponse]
+        public async Task<NotebookCreated> HandleAsync(CreateNotebook request, CancellationToken cancellationToken = default)
         {
             Notebook newNotebook = new()
             {
@@ -35,7 +37,7 @@ namespace MnemosyneDomain.Commands.Notebooks
             };
 
             _context.Notebooks.Add(newNotebook);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
 
             return new NotebookCreated(
                 request.User,
@@ -45,12 +47,12 @@ namespace MnemosyneDomain.Commands.Notebooks
             );
         }
 
-        public async Task HandleAsync(DeleteNotebook request)
+        public async Task HandleAsync(DeleteNotebook request, CancellationToken cancellationToken = default)
         {
             if (!await _authService.IsAuthorizedAsync(request.User, request.NotebookId, AuthorizationPolicies.NotebookOwner)) return;
 
             _context.Notebooks.Remove(new Notebook { NotebookId = request.NotebookId });
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
         }
     }
 }

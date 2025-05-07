@@ -4,11 +4,17 @@ import { useNotebookStore } from "../stores/NotebookStore";
 
 const notebookStore = useNotebookStore();
 
+const updatePage = (event: Event) => {
+    const { value } = event.target as HTMLTextAreaElement;
+
+    notebookStore.updatePage(value);
+}
+
 </script>
 
 <template>
     <main class="h-full">
-        <textarea v-model="notebookStore.selectedPage.contents" class="h-full w-full">
+        <textarea :value="notebookStore.selectedPage?.contents" @input="updatePage" class="h-full w-full">
 
         </textarea>
     </main>
