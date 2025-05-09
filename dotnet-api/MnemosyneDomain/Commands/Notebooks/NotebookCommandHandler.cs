@@ -28,12 +28,15 @@ namespace MnemosyneDomain.Commands.Notebooks
         [AlwaysPublishResponse]
         public async Task<NotebookCreated> HandleAsync(CreateNotebook request, CancellationToken cancellationToken = default)
         {
+            int existingNotebookCount = _context.Notebooks.Count(x => x.UserId == request.User.UserId);
+
             Notebook newNotebook = new()
             {
                 NotebookId = Guid.NewGuid(),
+                Title = $"Notebook {existingNotebookCount + 1}",
                 Created = DateTime.UtcNow,
                 Updated = DateTime.UtcNow,
-                UserId = request.User.UserId
+                UserId = request.User.UserId,
             };
 
             _context.Notebooks.Add(newNotebook);

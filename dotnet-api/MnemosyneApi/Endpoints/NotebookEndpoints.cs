@@ -17,7 +17,16 @@ namespace MnemosyneApi.Endpoints
         [WolverineGet("/api/notebooks")]
         public static async Task<List<Notebook>> GetNotebooks(IMessageBus bus, [NotBody] User user, CancellationToken cancellationToken)
         {
-            return await bus.InvokeAsync<List<Notebook>>(new GetNotebooks(user), cancellationToken);
+            List<Notebook> notebooks = await bus.InvokeAsync<List<Notebook>>(new GetNotebooks(user), cancellationToken);
+
+            if (notebooks.Count == 0)
+            {
+                NotebookCreated created = await bus.InvokeAsync<NotebookCreated>(new CreateNotebook(user), cancellationToken);
+
+                notebooks = await bus.InvokeAsync<List<Notebook>>(new GetNotebooks(user), cancellationToken);
+            }
+
+            return notebooks;
         }
 
         /// <summary>
