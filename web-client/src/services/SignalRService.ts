@@ -4,7 +4,7 @@ let signalRConnection: HubConnection | null = null;
 let authStore: any = null;
 let notebookStore: any = null;
 
-const createUserConnection = (authStoreInstance: any, notebookStoreInstance: any) => {
+function createUserConnection(authStoreInstance: any, notebookStoreInstance: any) {
     authStore = authStoreInstance;
     notebookStore = notebookStoreInstance;
 

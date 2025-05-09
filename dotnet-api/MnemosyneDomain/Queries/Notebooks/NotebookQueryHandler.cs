@@ -26,6 +26,7 @@ namespace MnemosyneDomain.Queries.Notebooks
         {
             List<Notebook> notebooks = await _context.Notebooks
                 .Where(n => n.UserId == request.User.UserId)
+                .OrderBy(n => n.Created)
                 .Select(x => new Notebook(
                     x.NotebookId,
                     x.Created,
@@ -39,7 +40,7 @@ namespace MnemosyneDomain.Queries.Notebooks
 
         public async Task<Notebook?> HandleAsync(GetNotebook request, CancellationToken cancellationToken = default)
         {
-            if (!(await _authorizationHandler.IsAuthorizedAsync(request.User, request.NotebookId, AuthorizationPolicies.NotebookOwner))) return null;
+            if (!(await _authorizationHandler.IsAuthorizedAsync(request.User, request.NotebookId, AuthorizationPolicies.PageOwner))) return null;
 
             if (await _context.Notebooks.FindAsync(request.NotebookId, cancellationToken) is Models.Notebook notebook)
             {

@@ -33,11 +33,14 @@ namespace MnemosyneApi.Endpoints
         /// Create a new notebook for the current user
         /// </summary>
         /// <param name="bus"></param>
-        /// <returns>A <see cref="NotebookCreated"/> instance with the new notebook info</returns>
+        /// <returns>A <see cref="Notebook"/> instance with the new notebook info</returns>
         [WolverinePost("/api/notebooks")]
-        public static async Task<NotebookCreated> CreateNotebook(IMessageBus bus, [NotBody] User user, CancellationToken cancellationToken)
+        public static async Task<Notebook> CreateNotebook(IMessageBus bus, [NotBody] User user, CancellationToken cancellationToken)
         {
-            return await bus.InvokeAsync<NotebookCreated>(new CreateNotebook(user), cancellationToken);
+            NotebookCreated result = await bus.InvokeAsync<NotebookCreated>(new CreateNotebook(user), cancellationToken);
+            Notebook notebook = await bus.InvokeAsync<Notebook>(new GetNotebook(user, result.NotebookId), cancellationToken);
+
+            return notebook;
         }
     }
 }

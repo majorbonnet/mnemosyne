@@ -20,6 +20,7 @@ namespace MnemosyneDomain.Queries.Pages
 
             List<Page> pages = await _context.Pages
                 .Where(p => p.NotebookId == request.NotebookId)
+                .OrderBy(p => p.PageNumber)
                 .Select(x => new Page
                 (
                     x.PageId,
@@ -32,6 +33,26 @@ namespace MnemosyneDomain.Queries.Pages
                 .ToListAsync(cancellationToken);
 
             return pages;
+        }
+
+        public async Task<Page?> HandleAsync(GetPage request, CancellationToken cancellationToken = default)
+        {
+            if (!await _authService.IsAuthorizedAsync(request.User, request.NotebookId, AuthorizationPolicies.NotebookOwner)) return null;
+
+            if (await _context.Pages.FindAsync(request.PageId, cancellationToken) is Models.Page page)
+            {
+                return new Page
+                (
+                    page.PageId,
+                    page.Created,
+                    page.Updated,
+                    page.PageNumber,
+                    page.Title,
+                    page.Contents
+                );
+            }
+
+            return null;
         }
     }
 }

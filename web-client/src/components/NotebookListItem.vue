@@ -12,10 +12,10 @@ const props = defineProps<{
 const notebookStore = useNotebookStore();
 const { selectedNotebook } = storeToRefs(notebookStore);
 
-let isNotebookSelected = ref(selectedNotebook.value.notebookId === props.notebook.notebookId);
+let isSelected = ref(selectedNotebook.value.notebookId === props.notebook.notebookId);
 
 watch(selectedNotebook, () => {
-    isNotebookSelected.value = selectedNotebook.value.notebookId === props.notebook.notebookId;
+    isSelected.value = selectedNotebook.value.notebookId === props.notebook.notebookId;
 });
 
 </script>
@@ -24,16 +24,17 @@ watch(selectedNotebook, () => {
     <li 
         class="mt-1 mx-1 min-w-full min-h-8 px-2 flex items-center hover:text-black" 
         :class="{ 
-                    'bg-(--blue-color)': isNotebookSelected, 
-                    'text-black': isNotebookSelected,
-                    'cursor-default': isNotebookSelected, 
-                    'cursor-pointer': !isNotebookSelected,
-                    'hover:bg-(--dark-blue-color)': !isNotebookSelected
+                    'bg-(--gray)': isSelected, 
+                    'text-black': isSelected,
+                    'cursor-default': isSelected, 
+                    'cursor-pointer': !isSelected,
+                    'hover:bg-(--dark-gray)': !isSelected,
+                    'hover:text-white': !isSelected
                 }"
         @click="notebookStore.selectNotebook(props.notebook)">
             {{ props.notebook.title ?? "&nbsp;" }}
     </li> 
-    <li v-if="isNotebookSelected">
+    <li v-if="isSelected">
         <PageList :pages="props.notebook.pages" />
     </li>
 </template>
