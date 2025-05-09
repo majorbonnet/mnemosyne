@@ -1,6 +1,5 @@
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import { defineStore } from 'pinia';
-import debounce from 'lodash.debounce';
 
 import MnemosyneApi from '../services/MnemosyneApi';
 import type Notebook from '../models/Notebook';
@@ -26,7 +25,10 @@ export const useNotebookStore = defineStore("notebookStore", () => {
     }
 
     async function addNotebook(notebook: Notebook) {
-        notebooks.value.push(notebook);
+        // there are cases where we get multiple notificationst to add a notebook
+        if (!notebooks.value.find(n => n.notebookId == notebook.notebookId)) {
+            notebooks.value.push(notebook);
+        }
 
         if (notebooks.value.length == 1) {
             await selectNotebook(notebooks.value[0]);
