@@ -25,7 +25,7 @@ async function saveTitleOnEnter(event: KeyboardEvent) {
 </script>
 
 <template>
-    <header class="sticky top-0 bg-(--dark-black) py-2 z-100">
+    <header class="sticky top-0 bg-(--clr-surface-a0) py-2 z-100 border-(--clr-surface-a30) border-b-[2px] shadow-md">
         <div class="grid grid-cols-2 w-full min-h-12">
             <div class="flex items-center px-3">
                 <img src="/mnemosyne_32x32.jpg" />&nbsp;<h1 class="text-2xl font-bold">mnemosyne</h1>
@@ -36,7 +36,7 @@ async function saveTitleOnEnter(event: KeyboardEvent) {
         </div>
         <div class="flex align-items font-bold text-lg pl-3 box-border">
             <h1 class="inline-block" v-show="!editNotebookTitle" @click="editTitle">{{ notebookStore.selectedNotebook?.title }}</h1>
-            <input class="inline-block pl-1 bg-(--dark-gray) outline-none text-white" v-show="editNotebookTitle" @keyup="saveTitleOnEnter" v-model="notebookStore.selectedNotebook.title" ref="title-input" />
+            <input class="inline-block pl-1 bg-(--clr-surface-tonal-a20) outline-none text-white" v-show="editNotebookTitle" @keyup="saveTitleOnEnter" v-model="notebookStore.selectedNotebook.title" ref="title-input" />
             &nbsp;-&nbsp;
             <h1 v-if="notebookStore.selectedPage" class="inline-block">{{ notebookStore.selectedPage.title ?? `Page ${notebookStore.selectedPage.pageNumber}` }}</h1>
         </div>

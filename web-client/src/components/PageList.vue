@@ -9,9 +9,9 @@ const notebookStore = useNotebookStore();
 </script>
 
 <template>
-    <ul class="pl-6 mt-1">
+    <ul class="pl-4 pr-1 mt-1">
         <PageListItem v-for="page in props.pages" :page="page" />
-        <li class="bg-(--gray) mt-1 px-2 flex items-center hover:bg-(--dark-gray) text-black hover:text-white">
+        <li class="bg-(--clr-surface-tonal-a10) mt-1 px-2 flex items-center hover:bg-(--clr-surface-tonal-a20)">
             <button class="w-full h-full flex justify-center cursor-pointer font-medium" @click="notebookStore.createPage()">
                 +
             </button> 

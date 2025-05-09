@@ -17,14 +17,12 @@ watch(selectedPage, () => {
 </script>
 
 <template>
-    <li class="mt-1 flex items-center hover:text-black px-2"
+    <li class="mt-1 flex items-center px-2"
         :class="{ 
-            'bg-(--gray)': isSelected, 
-            'text-black': isSelected,
+            'bg-(--clr-surface-tonal-a10)': isSelected, 
             'cursor-default': isSelected, 
             'cursor-pointer': !isSelected,
-            'hover:bg-(--dark-gray)': !isSelected,
-            'hover:text-white': !isSelected
+            'hover:bg-(--clr-surface-tonal-a20)': !isSelected
         }"
         @click="notebookStore.selectPage(page)">
         {{ props.page.title ?? `Page ${props.page.pageNumber}` }}

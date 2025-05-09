@@ -22,14 +22,12 @@ watch(selectedNotebook, () => {
 
 <template>
     <li 
-        class="mt-1 mx-1 min-w-full min-h-8 px-2 flex items-center hover:text-black" 
+        class="mt-1 mx-1 min-h-8 px-2 flex items-center box-border" 
         :class="{ 
-                    'bg-(--gray)': isSelected, 
-                    'text-black': isSelected,
+                    'bg-(--clr-surface-tonal-a10)': isSelected, 
                     'cursor-default': isSelected, 
                     'cursor-pointer': !isSelected,
-                    'hover:bg-(--dark-gray)': !isSelected,
-                    'hover:text-white': !isSelected
+                    'hover:bg-(--clr-surface-tonal-a20)': !isSelected
                 }"
         @click="notebookStore.selectNotebook(props.notebook)">
             {{ props.notebook.title ?? "&nbsp;" }}
