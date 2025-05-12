@@ -5,14 +5,13 @@ import PageListItem from './PageListItem.vue';
 
 const props = defineProps<{ pages: Page[] | undefined }>();
 const notebookStore = useNotebookStore();
-
 </script>
 
 <template>
     <ul class="pl-4 pr-1 mt-1">
         <PageListItem v-for="page in props.pages" :page="page" />
-        <li class="bg-(--clr-surface-tonal-a10) mt-1 px-2 flex items-center hover:bg-(--clr-surface-tonal-a20)">
-            <button class="w-full h-full flex justify-center cursor-pointer font-medium" @click="notebookStore.createPage()">
+        <li class="active">
+            <button class="list-button" @click="notebookStore.createPage()">
                 +
             </button> 
         </li>
@@ -20,4 +19,9 @@ const notebookStore = useNotebookStore();
 </template>
 
 <style>
+.page-list {
+    list-style: none;
+    padding: 0 4px 0 16px;
+    margin-top: 4px;
+}
 </style>

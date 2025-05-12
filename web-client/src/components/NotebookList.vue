@@ -12,10 +12,10 @@ onMounted(() => {
 </script>
 
 <template>
-    <ul class="list-none p-0 min-h-8/10 w-full box-border">
+    <ul class="notebook-list">
         <NotebookListItem v-for="notebook in notebookStore.notebooks" :notebook="notebook" />
-        <li class="bg-(--clr-surface-tonal-a10) mt-1 mx-1 min-h-8 px-2 flex items-center hover:bg-(--clr-surface-tonal-a20) box-border">
-            <button class="w-full h-full flex justify-center cursor-pointer font-medium" @click="notebookStore.createNotebook()">
+        <li class="active">
+            <button class="list-button" @click="notebookStore.createNotebook()">
                 +
             </button> 
         </li>
@@ -23,4 +23,11 @@ onMounted(() => {
 </template>
 
 <style>
+.notebook-list {
+    list-style: none;
+    padding: 0;
+    min-height: 80%;
+    width: 100%;
+    box-sizing: border-box;
+}
 </style>
