@@ -32,12 +32,19 @@ watch(selectedPage, () => {
 <style scoped>
 main {
     height: 100%;
-    padding: 8px 0 0 8px;
+    padding: 16px 32px 0 32px;
+    overflow: hidden;
 }
 
 .primary-input {
     height: 100%;
     width: 100%;
+    background-color: var(--input-background-color);
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: gray 8px -4px 4px 4px, gray -8px -4px 4px 4px;
+    resize: none;
+    margin-bottom: -32px;
 
     &:focus{ 
         outline: none;

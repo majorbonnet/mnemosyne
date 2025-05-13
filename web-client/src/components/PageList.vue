@@ -10,7 +10,7 @@ const notebookStore = useNotebookStore();
 <template>
     <ul class="menu__list menu__list--sublist">
         <PageListItem v-for="page in props.pages" :page="page" />
-        <li class="menu__item menu__item--active">
+        <li class="menu__item menu__item--interact-only">
             <button @click="notebookStore.createPage()">
                 +
             </button> 

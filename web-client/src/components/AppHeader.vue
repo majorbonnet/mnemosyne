@@ -47,12 +47,12 @@ async function saveTitleOnEnter(event: KeyboardEvent) {
 header {
     position: sticky;
     top: 0;
-    background-color: var(--clr-surface-a0);
+    background-color: var(--background-color);
     padding: 2px 0 2px 0;
     z-index: 100;
-    border-color: var(--clr-surface-a30);
+    border-color: var(--primary-color-highlight);
     border-bottom: 2px;
-    box-shadow: 0 3px 2px black;
+    box-shadow: gray 0 3px 2px;
 }
 
 .app-header {
@@ -81,14 +81,14 @@ header {
 
     & > button {
         cursor:pointer;
-        border: 1px solid var(--clr-surface-a30);
+        border: 1px solid var(--primary-color);
         padding: 4px;
         margin-left: 8px;
         border-radius: 4px;
     }
 
     & > button:hover {
-        background-color: var(--clr-surface-a20);
+        background-color: var(--primary-color-highlight);
     }
 }
 
@@ -108,7 +108,7 @@ header {
     & > input {
         display: inline-block;
         padding-left: 4px;
-        background-color: var(--clr-surface-tonal-a20);
+        background-color: var(--input-background-color);
         outline: none;
         color: white;
     }

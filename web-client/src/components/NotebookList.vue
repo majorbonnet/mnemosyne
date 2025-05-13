@@ -14,7 +14,7 @@ onMounted(() => {
 <template>
     <ul class="menu__list">
         <NotebookListItem v-for="notebook in notebookStore.notebooks" :notebook="notebook" />
-        <li class="menu__item menu__item--active">
+        <li class="menu__item menu__item--interact-only">
             <button @click="notebookStore.createNotebook()">
                 +
             </button> 

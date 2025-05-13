@@ -6,11 +6,17 @@ import SideBar from "../components/SideBar.vue";
 
 <template>
     <AppHeader />
-    <div class="grid grid-cols-[auto_1fr] h-full">
+    <div class="body-wrapper">
         <SideBar />
         <NotebookDisplay />
     </div>
 </template>
 
 <style scoped>
+.body-wrapper {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    height: 100%;
+    overflow: hidden;
+}
 </style>

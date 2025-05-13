@@ -47,16 +47,15 @@ function toggleSidebar() {
 .sidebar__opener {
     position: relative;
     left: 0;
-    background-color: var(--clr-surface-tonal-a0);
+    background-color: var(--secondary-background-color);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 100%;
     width: 30px;
-    border-right: 1px solid var(--clr-surface-a30);
     box-sizing: border-box;
-    box-shadow: black 2px 0 2px;
+    box-shadow: gray 2px 0 2px;
 }
 
 .sidebar__contents {
@@ -69,19 +68,18 @@ function toggleSidebar() {
 }
 
 .sidebar__closer {
-    background-color: var(--clr-surface-tonal-a0);
+    background-color: var(--secondary-background-color);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 100%;
     width: 30px;
-    border-right: 1px solid var(--clr-surface-a30);
     box-sizing: border-box;
-    box-shadow: black 2px 0 2px;   
+    box-shadow: gray 2px 0 2px;   
 }
 
 .sidebar__opener:hover, .sidebar__closer:hover {
-    background-color: var(--clr-surface-tonal-a10);
+    background-color: var(--background-highlight);
 }
 </style>
