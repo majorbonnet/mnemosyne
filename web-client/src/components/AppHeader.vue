@@ -26,15 +26,15 @@ async function saveTitleOnEnter(event: KeyboardEvent) {
 
 <template>
     <header>
-        <div id="app-header">
-            <div id="app-title">
+        <div class="app-header">
+            <div class="app-header__title">
                 <img src="/mnemosyne_32x32.jpg" />&nbsp;<h1>mnemosyne</h1>
             </div>
-            <div id="user-info">
-                <span @click="authStore.logout()">{{ authStore.user.username }}</span>
+            <div class="app-header__user-info">
+                {{ authStore.user.username }}<button @click="authStore.logout()">Logout</button>
             </div>
         </div>
-        <div id="sub-header">
+        <div class="subheader">
             <h2 v-show="!editNotebookTitle" @click="editTitle">{{ notebookStore.selectedNotebook?.title }}</h2>
             <input v-show="editNotebookTitle" @keyup="saveTitleOnEnter" v-model="notebookStore.selectedNotebook.title" ref="title-input" />
             &nbsp;-&nbsp;
@@ -55,50 +55,62 @@ header {
     box-shadow: 0 3px 2px black;
 }
 
-#app-header {
+.app-header {
     display: grid;
     grid-template-columns: 1fr 1fr;
     width: 100%;
     min-height: 48px;
 }
 
-#app-title {
+.app-header__title {
     display: flex;
     align-items: center;
     padding: 0 12px 0 12px;
+
+    & > h1 {
+        font-size: 2rem;
+        font-weight: bold;
+    }
 }
 
-#app-title > h1 {
-    font-size: 2rem;
-    font-weight: bold;
-}
-
-#user-info {
+.app-header__user-info {
     display: flex;
     align-items: center;
     justify-content: end;
     padding: 0 12px 0 12px;
+
+    & > button {
+        cursor:pointer;
+        border: 1px solid var(--clr-surface-a30);
+        padding: 4px;
+        margin-left: 8px;
+        border-radius: 4px;
+    }
+
+    & > button:hover {
+        background-color: var(--clr-surface-a20);
+    }
 }
 
-#sub-header {
+.subheader {
     display: flex;
     align-items: center;
     font-weight: bold;
     font-size: 2rem;
     padding-left: 12px;
     box-sizing: border-box;
-}
 
-#sub-header > h2 {
-    font-size: 1rem;
-    display: inline-block;
-}
+    & > h2 {
+        font-size: 1rem;
+        display: inline-block;
+    }
 
-#sub-header > input {
-    display: inline-block;
-    padding-left: 4px;
-    background-color: var(--clr-surface-tonal-a20);
-    outline: none;
-    color: white;
+    & > input {
+        display: inline-block;
+        padding-left: 4px;
+        background-color: var(--clr-surface-tonal-a20);
+        outline: none;
+        color: white;
+    }
 }
 </style>

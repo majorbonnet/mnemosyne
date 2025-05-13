@@ -23,7 +23,7 @@ watch(selectedPage, () => {
 
 <template>
     <main>
-        <textarea :value="notebookStore.selectedPage?.contents" @input="updatePage" id="page-input" ref="page-input">
+        <textarea class="primary-input" :value="notebookStore.selectedPage?.contents" @input="updatePage" ref="page-input">
 
         </textarea>
     </main>
@@ -35,13 +35,12 @@ main {
     padding: 8px 0 0 8px;
 }
 
-main textarea {
+.primary-input {
     height: 100%;
     width: 100%;
 
-}
-
-main textarea:focus {
-    outline: none;
+    &:focus{ 
+        outline: none;
+    }
 }
 </style>

@@ -22,7 +22,7 @@ function toggleSidebar() {
 </script>
 
 <template>
-    <aside class="relative">
+    <aside class="sidebar">
         <div v-if="!showNotebooks" class="sidebar__opener" @click="toggleSidebar()">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="m5.25 4.5 7.5 7.5-7.5 7.5m6-15 7.5 7.5-7.5 7.5" />
@@ -54,14 +54,9 @@ function toggleSidebar() {
     align-items: center;
     height: 100%;
     width: 30px;
-    border-color: var(--clr-surface-a50);
-    border-right: 1px solid;
+    border-right: 1px solid var(--clr-surface-a30);
     box-sizing: border-box;
-    box-shadow: black 2px 0;
-
-    :hover {
-        background-color: var(--clr-surface-tonal-a10);
-    }
+    box-shadow: black 2px 0 2px;
 }
 
 .sidebar__contents {
@@ -81,10 +76,12 @@ function toggleSidebar() {
     align-items: center;
     height: 100%;
     width: 30px;
-    border-color: var(--clr-surface-a50);
-    border-right: 1px solid;
+    border-right: 1px solid var(--clr-surface-a30);
     box-sizing: border-box;
-    box-shadow: black 2px 0;   
+    box-shadow: black 2px 0 2px;   
 }
 
+.sidebar__opener:hover, .sidebar__closer:hover {
+    background-color: var(--clr-surface-tonal-a10);
+}
 </style>
