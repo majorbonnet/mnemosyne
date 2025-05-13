@@ -8,10 +8,10 @@ const notebookStore = useNotebookStore();
 </script>
 
 <template>
-    <ul class="pl-4 pr-1 mt-1">
+    <ul class="menu__list menu__list--sublist">
         <PageListItem v-for="page in props.pages" :page="page" />
-        <li class="active">
-            <button class="list-button" @click="notebookStore.createPage()">
+        <li class="menu__item menu__item--active">
+            <button @click="notebookStore.createPage()">
                 +
             </button> 
         </li>
@@ -21,7 +21,6 @@ const notebookStore = useNotebookStore();
 <style>
 .page-list {
     list-style: none;
-    padding: 0 4px 0 16px;
-    margin-top: 4px;
+
 }
 </style>
