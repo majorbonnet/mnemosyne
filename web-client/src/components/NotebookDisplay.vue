@@ -22,13 +22,25 @@ watch(selectedPage, () => {
 </script>
 
 <template>
-    <main class="h-full pl-2 pt-2">
-        <textarea :value="notebookStore.selectedPage?.contents" @input="updatePage" class="h-full w-full focus:outline-none" ref="page-input">
+    <main>
+        <textarea class="primary-input" :value="notebookStore.selectedPage?.contents" @input="updatePage" ref="page-input">
 
         </textarea>
     </main>
 </template>
 
 <style scoped>
+main {
+    height: 100%;
+    padding: 8px 0 0 8px;
+}
 
+.primary-input {
+    height: 100%;
+    width: 100%;
+
+    &:focus{ 
+        outline: none;
+    }
+}
 </style>

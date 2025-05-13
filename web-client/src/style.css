@@ -6,35 +6,35 @@
 }
 
 :root {
-/** Base colors */
---clr-dark-a0: #000000;
---clr-light-a0: #ffffff;
---clr-light-a10: #e9e9e9;
+  /** Base colors */
+  --clr-dark-a0: #000000;
+  --clr-light-a0: #ffffff;
+  --clr-light-a10: #e9e9e9;
 
 
-/** Theme primary colors */
---clr-primary-a0: #8ee89b;
---clr-primary-a10: #9ceba6;
---clr-primary-a20: #a9eeb1;
---clr-primary-a30: #b6f0bc;
---clr-primary-a40: #c3f3c7;
---clr-primary-a50: #cff6d2;
+  /** Theme primary colors */
+  --clr-primary-a0: #8ee89b;
+  --clr-primary-a10: #9ceba6;
+  --clr-primary-a20: #a9eeb1;
+  --clr-primary-a30: #b6f0bc;
+  --clr-primary-a40: #c3f3c7;
+  --clr-primary-a50: #cff6d2;
 
-/** Theme surface colors */
---clr-surface-a0: #121212;
---clr-surface-a10: #282828;
---clr-surface-a20: #3f3f3f;
---clr-surface-a30: #575757;
---clr-surface-a40: #717171;
---clr-surface-a50: #8b8b8b;
+  /** Theme surface colors */
+  --clr-surface-a0: #121212;
+  --clr-surface-a10: #282828;
+  --clr-surface-a20: #3f3f3f;
+  --clr-surface-a30: #575757;
+  --clr-surface-a40: #717171;
+  --clr-surface-a50: #8b8b8b;
 
-/** Theme tonal surface colors */
---clr-surface-tonal-a0: #1e241e;
---clr-surface-tonal-a10: #333833;
---clr-surface-tonal-a20: #494e49;
---clr-surface-tonal-a30: #606560;
---clr-surface-tonal-a40: #797d79;
---clr-surface-tonal-a50: #929592;
+  /** Theme tonal surface colors */
+  --clr-surface-tonal-a0: #1e241e;
+  --clr-surface-tonal-a10: #333833;
+  --clr-surface-tonal-a20: #494e49;
+  --clr-surface-tonal-a30: #606560;
+  --clr-surface-tonal-a40: #797d79;
+  --clr-surface-tonal-a50: #929592;
 
 
   color: var(--clr-light-a10);
@@ -42,5 +42,46 @@
 
   font-family: 'Courier New', Courier, monospace;
 }
+.menu__list {
+    list-style: none;
+    padding: 0;
+    min-height: 80%;
+    width: 100%;
+    box-sizing: border-box;
+}
 
+.menu__list--sublist {
+  padding: 0 16px 0 16px;
+  margin-top: 4px;
+}
 
+.menu__item {
+  box-sizing: border-box;
+  margin: 4px 4px 0 4px;
+  min-height: 32px;
+  padding: 0 8px 0 8px;
+  display: flex;
+  align-items: center;
+
+  &:hover {
+    background-color: var(--clr-surface-tonal-a20);
+    cursor: pointer;
+  }
+}
+
+.menu__item--active {
+  background-color: var(--clr-surface-tonal-a10);
+
+  &:hover {
+    cursor: default;
+  }
+
+  & > button {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+}

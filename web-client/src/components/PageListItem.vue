@@ -17,12 +17,9 @@ watch(selectedPage, () => {
 </script>
 
 <template>
-    <li class="mt-1 flex items-center px-2"
+    <li class="menu__item"
         :class="{ 
-            'bg-(--clr-surface-tonal-a10)': isSelected, 
-            'cursor-default': isSelected, 
-            'cursor-pointer': !isSelected,
-            'hover:bg-(--clr-surface-tonal-a20)': !isSelected
+            'menu__item--active': isSelected
         }"
         @click="notebookStore.selectPage(page)">
         {{ props.page.title ?? `Page ${props.page.pageNumber}` }}
