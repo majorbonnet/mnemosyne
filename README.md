@@ -10,11 +10,11 @@ Current stack is:
 - EF Core DB First
 - Keycloak
 - Vue (+ Vite)
-- Tailwind
 
 Todos:
  - [x] Switch notebooks to use UUIDs
  - [ ] Switch the notebook saving to use the SignalR hub
  - [ ] Add pushing notebook changes up to clients if they are not the originating client
  - [x] Fix up the UI to something usable for switching notebooks
- - [ ] Clean up the tailwind classes via @apply or switch away from tailwind (sorry, all the classes make the markup ugly)
+ - [x] Clean up the tailwind classes via @apply or switch away from tailwind (sorry, all the classes make the markup ugly)
+ - [ ] Search
