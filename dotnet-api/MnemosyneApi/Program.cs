@@ -26,10 +26,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     {
         o.RequireHttpsMetadata = false;
         // Set the metadata address for the OpenID configuration
-        o.MetadataAddress = "http://localhost:8080/realms/mnemosyne/.well-known/openid-configuration";
+        o.MetadataAddress = builder.Configuration.GetValue("TokenValidation:MetadataAddress", "");
+        System.Console.WriteLine(o.MetadataAddress);
 
         // Set the authority for the authentication server
-        o.Authority = "http://localhost:8080/realms/mnemosyne";
+        o.Authority = builder.Configuration.GetValue("TokenValidation:Authority", "");
+        System.Console.WriteLine(o.Authority);
 
         // Set the audience for the JWT token
         o.Audience = "account";
@@ -64,10 +66,12 @@ builder.Services.AddSignalR();
 
 builder.Services.AddCors(options =>
 {
+    System.Console.WriteLine("AllowedOrigins: " + builder.Configuration.GetValue("AllowedOrigins", ""));
+
     options.AddPolicy(name: "localorigins",
                       policy =>
                       {
-                          policy.WithOrigins("http://localhost:5173")
+                          policy.WithOrigins(builder.Configuration.GetValue("AllowedOrigins", ""))
                             .AllowAnyMethod()
                             .AllowAnyHeader()
                             .AllowCredentials();
@@ -91,8 +95,6 @@ app.MapWolverineEndpoints(opts =>
 });
 
 app.MapHub<NotebookSyncHub>("/hubs/notebooksync");
-
-
 app.MapGet("/", () => Results.Redirect("/swagger"));
 
 app.Run();

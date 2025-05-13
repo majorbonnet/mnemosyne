@@ -1,5 +1,6 @@
 services:
     db:
+        profiles: ["full","dev","dev-fe","dev-be"]
         image: 'postgres:17.4'
         volumes: 
             - ./postgresql/data:/var/lib/postgresql/data
@@ -20,6 +21,7 @@ services:
             - db_password
             - app_dbs
     auth:
+        profiles: ["full","dev","dev-fe","dev-be"]
         # need to wait for the db to be reachable
         depends_on:
             db:
@@ -36,27 +38,29 @@ services:
         # the db connection info is set in a secrets file
         secrets:
             - keycloak_conf
-    #webclient:
-    #    depends_on:
-    #        - auth
-    #    build: ./webclient
-    #    image: mnemosyne_webclient
-    #    ports:
-    #        - '5173:3000'
-    #    env_file:
-    #        - ./webclient/.env
-    #dotnetapi:
-    #    depends_on:
-    #        - auth
-    #    build: ./dotnet-api
-    #    image: mnemosyne_dotnet_api
-    #    ports: 
-    #        - 9442
-    #        - 9443
-    #    env_file:
-    #        ./dotnet-api/.env
-    #    volumes:
-    #        - ~/.aspnet/https:/https:ro
+    webclient:
+        profiles: ["full","dev-be"]
+        depends_on:
+            - auth
+        build: ./web-client
+        image: mnemosyne_webclient
+        ports:
+            - '5173:3000'
+        env_file:
+            - ./webclient/.env
+    dotnetapi:
+        profiles: ["full","dev-fe"]
+        depends_on:
+            - auth
+        build: ./dotnet-api
+        image: mnemosyne_dotnet_api
+        ports: 
+            - '9442:9442'
+            - '9443:9443'
+        env_file:
+            ./dotnet-api/.env
+        volumes:
+            - ~/.aspnet/https:/https:ro
 
 secrets:
     db_password:
