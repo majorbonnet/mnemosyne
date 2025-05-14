@@ -59,5 +59,20 @@ namespace MnemosyneApi.Endpoints
         {
             await bus.InvokeAsync(new UpdatePage(user, notebookId, pageId, request.Contents), cancellationToken);
         }
-    }
+
+        [WolverineGet("/api/pages")]
+        public static async Task<List<Page>> SearchPages(
+            IMessageBus bus,
+            [NotBody] User user,
+            string query,
+            CancellationToken cancellationToken)
+        {
+            // might as well short-circuit this here
+            if (string.IsNullOrEmpty(query))
+            {
+                return new List<Page>();
+            }
+
+            return await bus.InvokeAsync<List<Page>>(new SearchPages(user, query), cancellationToken);
+        }
 }

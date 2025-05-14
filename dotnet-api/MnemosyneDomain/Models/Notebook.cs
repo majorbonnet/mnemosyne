@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using NpgsqlTypes;
 
 namespace MnemosyneDomain.Models;
 
@@ -14,6 +15,8 @@ public partial class Notebook
     public DateTime Updated { get; set; }
 
     public string? Title { get; set; }
+
+    public NpgsqlTsVector? SearchText { get; set; }
 
     public virtual ICollection<Page> Pages { get; set; } = new List<Page>();
 

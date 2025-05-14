@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using NpgsqlTypes;
 
 namespace MnemosyneDomain.Models;
 
@@ -18,6 +19,8 @@ public partial class Page
     public string? Title { get; set; }
 
     public string? Contents { get; set; }
+
+    public NpgsqlTsVector? SearchText { get; set; }
 
     public virtual Notebook Notebook { get; set; } = null!;
 }

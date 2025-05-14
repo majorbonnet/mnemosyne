@@ -55,6 +55,9 @@ public partial class MnemosyneContext : DbContext
                 .ValueGeneratedNever()
                 .HasColumnName("notebook_id");
             entity.Property(e => e.Created).HasColumnName("created");
+            entity.Property(e => e.SearchText)
+                .HasComputedColumnSql("to_tsvector('english'::regconfig, (title)::text)", true)
+                .HasColumnName("search_text");
             entity.Property(e => e.Title)
                 .HasMaxLength(200)
                 .HasColumnName("title");
@@ -80,6 +83,9 @@ public partial class MnemosyneContext : DbContext
             entity.Property(e => e.Created).HasColumnName("created");
             entity.Property(e => e.NotebookId).HasColumnName("notebook_id");
             entity.Property(e => e.PageNumber).HasColumnName("page_number");
+            entity.Property(e => e.SearchText)
+                .HasComputedColumnSql("to_tsvector('english'::regconfig, (((title)::text || ' '::text) || contents))", true)
+                .HasColumnName("search_text");
             entity.Property(e => e.Title)
                 .HasMaxLength(200)
                 .HasColumnName("title");

@@ -54,5 +54,63 @@ namespace MnemosyneDomain.Queries.Pages
 
             return null;
         }
+
+        public async Task<List<Page>> HandleAsync(SearchPages request, CancellationToken cancellationToken = default)
+        {
+            List<Page> pages = new();
+
+            if (string.IsNullOrWhiteSpace(request.Query))
+            {
+                return pages;
+            }
+
+            if (request.IsExactMatch)
+            {
+                string query = request.Query.Replace("\"", "");
+
+                pages = await _context.Pages
+                    .Where(p => p.Notebook.UserId == request.User.UserId
+                        && ((p.Notebook.Title != null
+                                && p.Notebook.Title.Contains(query))
+                           || (p.Title != null
+                                && p.Title.Contains(query))
+                           || (p.Contents != null
+                                && p.Contents.Contains(query))))
+                    .OrderBy(p => p.PageNumber)
+                    .Select(x => new Page
+                    (
+                        x.PageId,
+                        x.Created,
+                        x.Updated,
+                        x.PageNumber,
+                        x.Title,
+                        x.Contents
+                    ))
+                    .ToListAsync(cancellationToken);
+
+            }
+            else
+            {
+                pages = await _context.Pages
+                    .Where(p => p.Notebook.UserId == request.User.UserId
+                        && ((p.Notebook.SearchText != null
+                                && p.Notebook.SearchText.Matches(EF.Functions.PlainToTsQuery(request.Query)))
+                           || (p.SearchText != null
+                                && p.SearchText.Matches(EF.Functions.PlainToTsQuery(request.Query)))))
+                    .OrderBy(p => p.PageNumber)
+                    .Select(x => new Page
+                    (
+                        x.PageId,
+                        x.Created,
+                        x.Updated,
+                        x.PageNumber,
+                        x.Title,
+                        x.Contents
+                    ))
+                    .ToListAsync(cancellationToken);
+            }
+
+            return pages;
+        }
     }
 }
