@@ -1,70 +1,47 @@
 <script setup lang="ts">
 
-import { watch, useTemplateRef } from "vue";
+import { watch, useTemplateRef, nextTick } from "vue";
 import { storeToRefs } from "pinia";
 import { useNotebookStore } from "../stores/NotebookStore";
-import { useImageStore } from "../stores/ImageStore";
 
 const notebookStore = useNotebookStore();
-const imageStore = useImageStore();
 const pageInput = useTemplateRef("page-input");
 
-const updatePage = (event: Event) => {
-    const { value } = event.target as HTMLTextAreaElement;
+const savePage = (event: Event) => {
+    const { innerHTML } = event.target as HTMLDivElement
 
-    notebookStore.updatePage(value);
+    notebookStore.updatePage(innerHTML);
 }
 
-const handlePaste = (event: ClipboardEvent) => {
-    const clipboardItems = event.clipboardData?.items;
+const moveCaretToEnd = (contentEditableElement: any) => {
+    let range, selection;
 
-    if (clipboardItems) {
-        for (const item of clipboardItems) {
-            if (item.type.startsWith("image/")) {
-                const file = item.getAsFile();
-                if (file) {
-                    // Handle the image file (e.g., upload it or convert it to a base64 string)
-                    imageStore.uploadImage(file).then((imageUrl) => {
-                        // You can now use the imageUrl in your application
-                        console.log("Image URL:", imageUrl);
-                        // Example: You could emit an event or call a store action to handle the image
-                    }).catch((error) => {
-                        console.error("Error uploading image:", error);
-                    });
-                    // Example: You could emit an event or call a store action to handle the image
-                }
-                event.preventDefault(); // Prevent default paste behavior for images
-            } else {
-                console.log("Non-image item pasted:", item);
-            }
-        }
-    }
-};
+    range = document.createRange();
+    range.selectNodeContents(contentEditableElement);
+    range.collapse(false); // Collapse to the end of the range
+    selection = window.getSelection();
+    selection?.removeAllRanges(); // Clear existing selections
+    selection?.addRange(range); // Add the new range
+}
 
 const { selectedPage } = storeToRefs(notebookStore);
 
 watch(selectedPage, () => {
     pageInput.value?.focus();
+    nextTick(() => {
+        moveCaretToEnd(pageInput.value)
+    });
 });
 
 </script>
 
 <template>
     <main>
-        <!--<textarea 
-            class="primary-input" 
-            :value="notebookStore.selectedPage?.contents" 
-            @input="updatePage" 
-            @paste="handlePaste"
-            ref="page-input">
-
-        </textarea>-->
-        <div contenteditable="true"
+        <div contenteditable
             class="primary-input"
-            @input="updatePage" 
-            @paste="handlePaste"
-            ref="page-input">
-            {{ notebookStore.selectedPage?.contents }}
+            @input="savePage" 
+            ref="page-input"
+            v-html="notebookStore.selectedPage?.contents">
         </div>
     </main>
 </template>
@@ -85,6 +62,7 @@ main {
     box-shadow: gray 8px -4px 4px 4px, gray -8px -4px 4px 4px;
     resize: none;
     margin-bottom: -32px;
+    overflow-y: scroll;
 
     &:focus{ 
         outline: none;

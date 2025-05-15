@@ -12,8 +12,6 @@ public partial class MnemosyneContext : DbContext
     {
     }
 
-    public virtual DbSet<Image> Images { get; set; }
-
     public virtual DbSet<Notebook> Notebooks { get; set; }
 
     public virtual DbSet<Page> Pages { get; set; }
@@ -22,29 +20,6 @@ public partial class MnemosyneContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Image>(entity =>
-        {
-            entity.HasKey(e => e.ImageId).HasName("image_pkey");
-
-            entity.ToTable("image");
-
-            entity.Property(e => e.ImageId)
-                .ValueGeneratedNever()
-                .HasColumnName("image_id");
-            entity.Property(e => e.AltText).HasColumnName("alt_text");
-            entity.Property(e => e.Created).HasColumnName("created");
-            entity.Property(e => e.FileLocation)
-                .HasMaxLength(500)
-                .HasColumnName("file_location");
-            entity.Property(e => e.Updated).HasColumnName("updated");
-            entity.Property(e => e.UserId).HasColumnName("user_id");
-
-            entity.HasOne(d => d.User).WithMany(p => p.Images)
-                .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("fk_image_user_info");
-        });
-
         modelBuilder.Entity<Notebook>(entity =>
         {
             entity.HasKey(e => e.NotebookId).HasName("notebook_pkey");
