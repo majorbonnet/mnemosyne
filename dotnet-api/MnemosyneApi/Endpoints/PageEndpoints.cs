@@ -75,4 +75,5 @@ namespace MnemosyneApi.Endpoints
 
             return await bus.InvokeAsync<List<Page>>(new SearchPages(user, query), cancellationToken);
         }
+    }
 }
