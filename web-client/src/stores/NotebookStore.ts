@@ -13,6 +13,8 @@ export const useNotebookStore = defineStore("notebookStore", () => {
     const selectedNotebook = ref<Notebook>({} as Notebook);
     const selectedPage = ref<Page>({} as Page);
 
+    const updatedContents = ref<string>("");
+
     async function fetchNotebooks() {
         const response = await MnemosyneApi.get<Notebook[]>("notebooks");
         notebooks.value = response.data;
@@ -82,12 +84,17 @@ export const useNotebookStore = defineStore("notebookStore", () => {
     async function updatePage(contents: string) {
         if (selectedPage.value) {
             await MnemosyneApi.post(`notebooks/${selectedNotebook.value.notebookId}/pages/${selectedPage.value.pageId}`, { "title": null, "contents": contents });
-            selectedPage.value.contents = contents;
+            updatedContents.value = contents;
         }
     }
 
     async function selectPage(page: Page) {
+        if (selectedPage.value && updatedContents.value) {
+            selectedPage.value.contents = updatedContents.value;
+        }
+
         selectedPage.value = page;
+        updatedContents.value = page.contents;
 
         console.log("Selecting page:", page.pageId);
 
