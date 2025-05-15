@@ -21,4 +21,8 @@
     <PackageReference Include="WolverineFx" Version="3.13.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Queries\Images\" />
+  </ItemGroup>
+
 </Project>

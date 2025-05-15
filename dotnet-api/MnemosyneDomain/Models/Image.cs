@@ -13,9 +13,9 @@ public partial class Image
 
     public DateTime Updated { get; set; }
 
-    public string ImageKey { get; set; } = null!;
-
     public string? AltText { get; set; }
+
+    public string? FileLocation { get; set; }
 
     public virtual UserInfo User { get; set; } = null!;
 }

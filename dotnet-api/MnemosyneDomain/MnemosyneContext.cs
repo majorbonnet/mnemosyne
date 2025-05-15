@@ -33,9 +33,9 @@ public partial class MnemosyneContext : DbContext
                 .HasColumnName("image_id");
             entity.Property(e => e.AltText).HasColumnName("alt_text");
             entity.Property(e => e.Created).HasColumnName("created");
-            entity.Property(e => e.ImageKey)
-                .HasMaxLength(20)
-                .HasColumnName("image_key");
+            entity.Property(e => e.FileLocation)
+                .HasMaxLength(500)
+                .HasColumnName("file_location");
             entity.Property(e => e.Updated).HasColumnName("updated");
             entity.Property(e => e.UserId).HasColumnName("user_id");
 
